@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="[25,)"
+issueTrackerURL="http://my.issue.tracker/"
+[[mods]]
+modId="curiousshulkerboxes"
+version="${file.jarVersion}"
+displayName="Curious Shulker Boxes"
+displayURL="https://minecraft.curseforge.com/projects/curious-shulker-boxes"
+logoFile="curioussb_icon.png"
+authors="C4"
+description='''
+Adds curio support for Shulker Boxes for easier access and management.
+'''
+[[dependencies.curiousshulkerboxes]]
+    modId="forge"
+    mandatory=true
+    versionRange="[25,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.curiousshulkerboxes]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.13.2, 1.14)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.curiousshulkerboxes]]
+    modId="curios"
+    mandatory=true
+    versionRange="[0.6,)"
+    ordering="NONE"
+    side="BOTH"

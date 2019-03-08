@@ -1,0 +1,5 @@
+# Curious Shulker Boxes [![](http://cf.way2muchnoise.eu/versions/curious-shulker-boxes.svg)](https://minecraft.curseforge.com/projects/curious-shulker-boxes) [![](http://cf.way2muchnoise.eu/short_curious-shulker-boxes_downloads.svg)](https://minecraft.curseforge.com/projects/curious-shulker-boxes/files) [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
+## Overview
+
+Curious Shulker Boxes is a mod that uses the Curios API to add a new slot, the Back slot, to the player inventory and allows the shulker boxes to be placed into this slot, either directly or through right-clicking with the box held in hand. While a shulker box is in this slot, the player can use a keybinding, default 'R', to directly access its contents. This allows the player to interact with a shulker box's contents more freely and easily without the need to place it down, to sacrifice an inventory slot to keep it around, or to need to search through a player's inventory for the box.
