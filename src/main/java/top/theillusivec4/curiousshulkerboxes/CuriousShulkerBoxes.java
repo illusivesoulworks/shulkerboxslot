@@ -28,14 +28,19 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import top.theillusivec4.curios.api.CuriosAPI;
 import top.theillusivec4.curios.api.CuriosRegistry;
 import top.theillusivec4.curios.api.capability.CuriosCapability;
 import top.theillusivec4.curios.api.capability.ICurio;
+import top.theillusivec4.curios.api.imc.CurioIMCMessage;
 import top.theillusivec4.curiousshulkerboxes.client.EventHandlerClient;
 import top.theillusivec4.curiousshulkerboxes.client.KeyRegistry;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
@@ -50,19 +55,24 @@ public class CuriousShulkerBoxes {
     public static final String MODID = "curiousshulkerboxes";
 
     public CuriousShulkerBoxes() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
+        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        eventBus.addListener(this::setup);
+        eventBus.addListener(this::clientSetup);
+        eventBus.addListener(this::enqueue);
     }
 
-    public void setup(FMLCommonSetupEvent evt) {
-        CuriosRegistry.getOrRegisterType("back");
+    private void setup(final FMLCommonSetupEvent evt) {
         MinecraftForge.EVENT_BUS.register(this);
         NetworkHandler.register();
     }
 
-    public void clientSetup(FMLClientSetupEvent evt) {
+    private void clientSetup(final FMLClientSetupEvent evt) {
         KeyRegistry.register();
         MinecraftForge.EVENT_BUS.register(new EventHandlerClient());
+    }
+
+    private void enqueue(final InterModEnqueueEvent evt) {
+        InterModComms.sendTo("curios", CuriosAPI.IMC.REGISTER_TYPE, () -> new CurioIMCMessage("back"));
     }
 
     @SubscribeEvent

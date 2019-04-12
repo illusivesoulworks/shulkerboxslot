@@ -115,9 +115,9 @@ public class CurioShulkerBox implements ICurio {
             case OPENED:
                 state = 3;
         }
-        compound.setInt("Animation", state);
-        compound.setFloat("Progress", this.progress);
-        compound.setFloat("OldProgress", this.progressOld);
+        compound.putInt("Animation", state);
+        compound.putFloat("Progress", this.progress);
+        compound.putFloat("OldProgress", this.progressOld);
         return compound;
     }
 
