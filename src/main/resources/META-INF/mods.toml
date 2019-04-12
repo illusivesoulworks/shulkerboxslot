@@ -1,15 +1,15 @@
 modLoader="javafml"
 loaderVersion="[25,)"
 issueTrackerURL="https://github.com/TheIllusiveC4/CuriousShulkerBoxes/issues"
+logoFile="${mod_icon}"
 [[mods]]
-modId="curiousshulkerboxes"
-version="${file.jarVersion}"
-displayName="Curious Shulker Boxes"
-displayURL="https://minecraft.curseforge.com/projects/curious-shulker-boxes"
-logoFile="curioussb_icon.png"
-authors="C4"
+modId="${mod_id}"
+version="${version}"
+displayName="${mod_name}"
+displayURL="${mod_url}"
+authors="${mod_author}"
 description='''
-Adds curio support for Shulker Boxes for easier access and management.
+${mod_description}
 '''
 [[dependencies.curiousshulkerboxes]]
     modId="forge"
@@ -26,6 +26,6 @@ Adds curio support for Shulker Boxes for easier access and management.
 [[dependencies.curiousshulkerboxes]]
     modId="curios"
     mandatory=true
-    versionRange="[0.6,)"
+    versionRange="[0.10,)"
     ordering="NONE"
     side="BOTH"
