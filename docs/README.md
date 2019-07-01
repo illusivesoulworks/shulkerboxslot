@@ -1,4 +1,4 @@
-# Curious Shulker Boxes [![](http://cf.way2muchnoise.eu/versions/curious-shulker-boxes.svg)](https://minecraft.curseforge.com/projects/curious-shulker-boxes) [![](http://cf.way2muchnoise.eu/short_curious-shulker-boxes_downloads.svg)](https://minecraft.curseforge.com/projects/curious-shulker-boxes/files) [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+# Curious Shulker Boxes [![](http://cf.way2muchnoise.eu/versions/curious-shulker-boxes.svg)](https://www.curseforge.com/minecraft/mc-mods/curious-shulker-boxes) [![](http://cf.way2muchnoise.eu/short_curious-shulker-boxes_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/curious-shulker-boxes/files) [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg?&style=flat-square)](https://www.gnu.org/licenses/lgpl-3.0) [![](https://img.shields.io/discord/500852157503766538.svg?color=green&label=Discord&style=flat-square)](https://discord.gg/JWgrdwt)
 
 ## Overview
 
