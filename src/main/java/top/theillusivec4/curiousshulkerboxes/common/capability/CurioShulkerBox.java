@@ -38,15 +38,14 @@ import javax.annotation.Nonnull;
 
 public class CurioShulkerBox implements ICurio {
 
-    private final EnumDyeColor color;
+    private ItemStack stack;
     private TileEntityShulkerBox.AnimationStatus animationStatus = TileEntityShulkerBox.AnimationStatus.CLOSED;
     private float progress;
     private float progressOld;
-
     private Object model;
 
     public CurioShulkerBox(ItemStack stack) {
-        this.color = BlockShulkerBox.getColorFromItem(stack.getItem());
+        this.stack = stack;
     }
 
     public void setAnimationStatus(TileEntityShulkerBox.AnimationStatus status) {
@@ -155,7 +154,7 @@ public class CurioShulkerBox implements ICurio {
         GlStateManager.disableCull();
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         ICurio.RenderHelper.rotateIfSneaking(entitylivingbaseIn);
-
+        EnumDyeColor color = BlockShulkerBox.getColorFromItem(stack.getItem());
         if (color == null) {
             textureManager.bindTexture(RenderShulker.field_204402_a);
         } else {
