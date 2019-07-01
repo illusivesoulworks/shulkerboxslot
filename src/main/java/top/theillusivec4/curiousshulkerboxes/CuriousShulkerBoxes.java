@@ -20,9 +20,9 @@
 package top.theillusivec4.curiousshulkerboxes;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockShulkerBox;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -37,7 +37,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import top.theillusivec4.curios.api.CuriosAPI;
-import top.theillusivec4.curios.api.CuriosRegistry;
 import top.theillusivec4.curios.api.capability.CuriosCapability;
 import top.theillusivec4.curios.api.capability.ICurio;
 import top.theillusivec4.curios.api.imc.CurioIMCMessage;
@@ -79,14 +78,14 @@ public class CuriousShulkerBoxes {
     public void attachCapabilities(AttachCapabilitiesEvent<ItemStack> evt) {
         ItemStack stack = evt.getObject();
 
-        if (Block.getBlockFromItem(stack.getItem()) instanceof BlockShulkerBox) {
+        if (Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock) {
             CurioShulkerBox curioShulkerBox = new CurioShulkerBox(stack);
             evt.addCapability(CuriosCapability.ID_ITEM, new ICapabilityProvider() {
                 LazyOptional<ICurio> curio = LazyOptional.of(() -> curioShulkerBox);
 
                 @Nonnull
                 @Override
-                public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
+                public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
                     return CuriosCapability.ITEM.orEmpty(cap, curio);
                 }
             });

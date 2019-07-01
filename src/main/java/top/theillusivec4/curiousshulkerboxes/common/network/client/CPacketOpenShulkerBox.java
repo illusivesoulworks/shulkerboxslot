@@ -21,8 +21,10 @@ package top.theillusivec4.curiousshulkerboxes.common.network.client;
 
 import net.minecraft.block.BlockShulkerBox;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.stats.StatList;
+import net.minecraft.stats.Stats;
 import net.minecraftforge.fml.network.NetworkEvent;
 import top.theillusivec4.curios.api.CuriosAPI;
 import top.theillusivec4.curiousshulkerboxes.common.inventory.CurioShulkerBoxHandler;
@@ -39,10 +41,10 @@ public class CPacketOpenShulkerBox {
 
     public static void handle(CPacketOpenShulkerBox msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            EntityPlayerMP sender = ctx.get().getSender();
+            ServerPlayerEntity sender = ctx.get().getSender();
 
             if (sender != null) {
-                sender.addStat(StatList.OPEN_SHULKER_BOX);
+                sender.addStat(Stats.OPEN_SHULKER_BOX);
                 CuriosAPI.FinderData shulkerBox = CuriosAPI.getCurioEquipped(stack -> BlockShulkerBox.
                                 getBlockFromItem(stack.getItem()) instanceof BlockShulkerBox, sender);
 

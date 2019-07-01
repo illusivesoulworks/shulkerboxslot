@@ -19,19 +19,19 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.capability;
 
-import net.minecraft.block.BlockShulkerBox;
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderShulker;
-import net.minecraft.client.renderer.entity.model.ModelShulker;
+import net.minecraft.client.renderer.entity.ShulkerRenderer;
+import net.minecraft.client.renderer.entity.model.ShulkerModel;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityShulkerBox;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import top.theillusivec4.curios.api.capability.ICurio;
 
 import javax.annotation.Nonnull;
@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 public class CurioShulkerBox implements ICurio {
 
     private ItemStack stack;
-    private TileEntityShulkerBox.AnimationStatus animationStatus = TileEntityShulkerBox.AnimationStatus.CLOSED;
+    private ShulkerBoxTileEntity.AnimationStatus animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
     private float progress;
     private float progressOld;
     private Object model;
@@ -48,7 +48,7 @@ public class CurioShulkerBox implements ICurio {
         this.stack = stack;
     }
 
-    public void setAnimationStatus(TileEntityShulkerBox.AnimationStatus status) {
+    public void setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus status) {
         this.animationStatus = status;
     }
 
@@ -57,7 +57,7 @@ public class CurioShulkerBox implements ICurio {
     }
 
     @Override
-    public void onCurioTick(String identifier, EntityLivingBase entityLivingBase) {
+    public void onCurioTick(String identifier, LivingEntity entityLivingBase) {
         this.progressOld = this.progress;
 
         switch(this.animationStatus) {
@@ -67,14 +67,14 @@ public class CurioShulkerBox implements ICurio {
             case OPENING:
                 this.progress += 0.1F;
                 if (this.progress >= 1.0F) {
-                    this.animationStatus = TileEntityShulkerBox.AnimationStatus.OPENED;
+                    this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.OPENED;
                     this.progress = 1.0F;
                 }
                 break;
             case CLOSING:
                 this.progress -= 0.1F;
                 if (this.progress <= 0.0F) {
-                    this.animationStatus = TileEntityShulkerBox.AnimationStatus.CLOSED;
+                    this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
                     this.progress = 0.0F;
                 }
                 break;
@@ -84,7 +84,7 @@ public class CurioShulkerBox implements ICurio {
     }
 
     @Override
-    public void playEquipSound(EntityLivingBase entityLivingBase) {
+    public void playEquipSound(LivingEntity entityLivingBase) {
         entityLivingBase.world.playSound(null, entityLivingBase.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
     }
 
@@ -94,14 +94,14 @@ public class CurioShulkerBox implements ICurio {
     }
 
     @Override
-    public boolean shouldSyncToTracking(String identifier, EntityLivingBase entityLivingBase) {
+    public boolean shouldSyncToTracking(String identifier, LivingEntity entityLivingBase) {
         return true;
     }
 
     @Nonnull
     @Override
-    public NBTTagCompound getSyncTag() {
-        NBTTagCompound compound = new NBTTagCompound();
+    public CompoundNBT getSyncTag() {
+        CompoundNBT compound = new CompoundNBT();
         int state = 0;
 
         switch(this.animationStatus) {
@@ -121,44 +121,44 @@ public class CurioShulkerBox implements ICurio {
     }
 
     @Override
-    public void readSyncTag(NBTTagCompound compound) {
+    public void readSyncTag(CompoundNBT compound) {
         int state = compound.getInt("Animation");
 
         switch(state) {
             case 0:
-                this.animationStatus = TileEntityShulkerBox.AnimationStatus.CLOSED;
+                this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
                 break;
             case 1:
-                this.animationStatus = TileEntityShulkerBox.AnimationStatus.OPENING;
+                this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.OPENING;
                 break;
             case 2:
-                this.animationStatus = TileEntityShulkerBox.AnimationStatus.CLOSING;
+                this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSING;
                 break;
             case 3:
-                this.animationStatus = TileEntityShulkerBox.AnimationStatus.OPENED;
+                this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.OPENED;
         }
         this.progress = compound.getFloat("Progress");
         this.progressOld = compound.getFloat("OldProgress");
     }
 
     @Override
-    public boolean hasRender(String identifier, EntityLivingBase entityLivingBase) {
+    public boolean hasRender(String identifier, LivingEntity entityLivingBase) {
         return true;
     }
 
     @Override
-    public void doRender(String identifier, EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void doRender(String identifier, LivingEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         GlStateManager.enableDepthTest();
         GlStateManager.depthFunc(515);
         GlStateManager.depthMask(true);
         GlStateManager.disableCull();
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         ICurio.RenderHelper.rotateIfSneaking(entitylivingbaseIn);
-        EnumDyeColor color = BlockShulkerBox.getColorFromItem(stack.getItem());
+        DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
         if (color == null) {
-            textureManager.bindTexture(RenderShulker.field_204402_a);
+            textureManager.bindTexture(ShulkerRenderer.field_204402_a);
         } else {
-            textureManager.bindTexture(RenderShulker.SHULKER_ENDERGOLEM_TEXTURE[color.getId()]);
+            textureManager.bindTexture(ShulkerRenderer.SHULKER_ENDERGOLEM_TEXTURE[color.getId()]);
         }
         GlStateManager.pushMatrix();
         GlStateManager.enableRescaleNormal();
@@ -170,10 +170,10 @@ public class CurioShulkerBox implements ICurio {
         GlStateManager.translatef(0.0F, -2.8F, -1.76F);
         GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 1.0f);
 
-        if (!(this.model instanceof ModelShulker)) {
-            this.model = new ModelShulker();
+        if (!(this.model instanceof ShulkerModel)) {
+            this.model = new ShulkerModel<>();
         }
-        ModelShulker model = (ModelShulker) this.model;
+        ShulkerModel model = (ShulkerModel) this.model;
         model.getBase().render(0.0625F);
         GlStateManager.translatef(0.0F, -this.getProgress(partialTicks) * 0.5F, 0.0F);
         GlStateManager.rotatef(270.0F * this.getProgress(partialTicks), 0.0F, 1.0F, 0.0F);

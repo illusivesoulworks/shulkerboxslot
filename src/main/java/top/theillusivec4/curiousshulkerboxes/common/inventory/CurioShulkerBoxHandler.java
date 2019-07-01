@@ -20,25 +20,19 @@
 package top.theillusivec4.curiousshulkerboxes.common.inventory;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockShulkerBox;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerShulkerBox;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityShulkerBox;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.IInteractionObject;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.PacketDistributor;
 import top.theillusivec4.curios.api.CuriosAPI;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
@@ -46,7 +40,6 @@ import top.theillusivec4.curiousshulkerboxes.common.network.server.SPacketSyncAn
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Set;
 
 public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
 
@@ -73,27 +66,21 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
     }
 
     @Override
-    public void openInventory(@Nonnull EntityPlayer player) {
+    public void openInventory(@Nonnull PlayerEntity player) {
 
         if (!player.isSpectator()) {
-            NBTTagCompound nbttagcompound = shulkerBox.getOrCreateChildTag("BlockEntityTag");
+            CompoundNBT nbttagcompound = shulkerBox.getOrCreateChildTag("BlockEntityTag");
             this.loadFromNbt(nbttagcompound);
             CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
 
                 if (curio instanceof CurioShulkerBox) {
-                    ((CurioShulkerBox) curio).setAnimationStatus(TileEntityShulkerBox.AnimationStatus.OPENING);
+                    ((CurioShulkerBox) curio).setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.OPENING);
                 }
             });
 
-            if (player instanceof EntityPlayerMP) {
-                Set<? extends EntityPlayer> tracking = ((WorldServer)player.world).getEntityTracker().getTrackingPlayers(player);
-
-                for (EntityPlayer player1 : tracking) {
-                    NetworkHandler.INSTANCE.sendTo(new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false),
-                            ((EntityPlayerMP)player1).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
-                }
-                NetworkHandler.INSTANCE.sendTo(new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false),
-                        ((EntityPlayerMP)player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+            if (player instanceof ServerPlayerEntity) {
+                NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
+                        new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false));
             }
             player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS,
                     0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
@@ -101,7 +88,7 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
     }
 
     @Override
-    public void closeInventory(@Nonnull EntityPlayer player) {
+    public void closeInventory(@Nonnull PlayerEntity player) {
 
         if (!player.isSpectator()) {
             this.saveToNbt(shulkerBox.getOrCreateChildTag("BlockEntityTag"));
@@ -148,12 +135,6 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
     @Override
     public Container createContainer(@Nonnull InventoryPlayer playerInventory, @Nonnull EntityPlayer playerIn) {
         return new ContainerShulkerBox(playerInventory, this, playerIn);
-    }
-
-    @Nonnull
-    @Override
-    public String getGuiID() {
-        return "minecraft:shulker_box";
     }
 
     @Nonnull
@@ -215,16 +196,6 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
     @Override
     public boolean isItemValidForSlot(int index, @Nonnull ItemStack stack) {
         return !(Block.getBlockFromItem(stack.getItem()) instanceof BlockShulkerBox);
-    }
-
-    @Override
-    public int getField(int id) {
-        return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-
     }
 
     @Override

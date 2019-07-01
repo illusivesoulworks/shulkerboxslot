@@ -20,11 +20,14 @@
 package top.theillusivec4.curiousshulkerboxes.common.network.server;
 
 import net.minecraft.block.BlockShulkerBox;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraft.tileentity.TileEntityShulkerBox;
 import net.minecraftforge.fml.network.NetworkEvent;
 import top.theillusivec4.curios.api.CuriosAPI;
@@ -62,22 +65,22 @@ public class SPacketSyncAnimation {
         ctx.get().enqueueWork(() -> {
             Entity entity = Minecraft.getInstance().world.getEntityByID(msg.entityId);
 
-            if (entity instanceof EntityLivingBase) {
-                CuriosAPI.getCuriosHandler((EntityLivingBase)entity).ifPresent(handler -> {
+            if (entity instanceof LivingEntity) {
+                CuriosAPI.getCuriosHandler((LivingEntity) entity).ifPresent(handler -> {
                     CurioStackHandler stackHandler = handler.getStackHandler(msg.identifier);
 
                     if (stackHandler != null && msg.index < stackHandler.getSlots()) {
                         ItemStack stack = stackHandler.getStackInSlot(msg.index);
 
-                        if (BlockShulkerBox.getBlockFromItem(stack.getItem()) instanceof BlockShulkerBox) {
+                        if (ShulkerBoxBlock.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock) {
                             CuriosAPI.getCurio(stack).ifPresent(curio -> {
 
                                 if (curio instanceof CurioShulkerBox) {
 
                                     if (msg.isClosing) {
-                                        ((CurioShulkerBox) curio).setAnimationStatus(TileEntityShulkerBox.AnimationStatus.CLOSING);
+                                        ((CurioShulkerBox) curio).setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.CLOSING);
                                     } else {
-                                        ((CurioShulkerBox) curio).setAnimationStatus(TileEntityShulkerBox.AnimationStatus.OPENING);
+                                        ((CurioShulkerBox) curio).setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.OPENING);
                                     }
                                 }
                             });

@@ -19,9 +19,9 @@
 
 package top.theillusivec4.curiousshulkerboxes.client;
 
-import net.minecraft.block.BlockShulkerBox;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -36,9 +36,9 @@ public class KeyRegistry {
         IKeyConflictContext ctx = new IKeyConflictContext() {
             @Override
             public boolean isActive() {
-                EntityPlayerSP playerSP = Minecraft.getInstance().player;
-                return CuriosAPI.getCurioEquipped(stack -> BlockShulkerBox.getBlockFromItem(stack.getItem()) instanceof BlockShulkerBox,
-                        playerSP) != null;
+                ClientPlayerEntity player = Minecraft.getInstance().player;
+                return CuriosAPI.getCurioEquipped(stack -> ShulkerBoxBlock.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock,
+                        player).isPresent();
             }
 
             @Override
