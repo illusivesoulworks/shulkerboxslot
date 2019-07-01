@@ -20,10 +20,15 @@
 package top.theillusivec4.curiousshulkerboxes.common.inventory;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.inventory.container.ShulkerBoxContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ShulkerBoxTileEntity;
@@ -31,7 +36,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import top.theillusivec4.curios.api.CuriosAPI;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
@@ -41,7 +46,7 @@ import top.theillusivec4.curiousshulkerboxes.common.network.server.SPacketSyncAn
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
+public class CurioShulkerBoxInventory implements IInventory, INamedContainerProvider {
 
     private NonNullList<ItemStack> items = NonNullList.withSize(27, ItemStack.EMPTY);
     private ItemStack shulkerBox;
@@ -49,7 +54,7 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
     private int index;
     protected ITextComponent customName;
 
-    public CurioShulkerBoxHandler(ItemStack shulkerBox, String identifier, int index) {
+    public CurioShulkerBoxInventory(ItemStack shulkerBox, String identifier, int index) {
         this.shulkerBox = shulkerBox;
         this.identifier = identifier;
         this.index = index;
@@ -95,26 +100,20 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
             CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
 
                 if (curio instanceof CurioShulkerBox) {
-                    ((CurioShulkerBox) curio).setAnimationStatus(TileEntityShulkerBox.AnimationStatus.CLOSING);
+                    ((CurioShulkerBox) curio).setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.CLOSING);
                 }
             });
 
-            if (player instanceof EntityPlayerMP) {
-                Set<? extends EntityPlayer> tracking = ((WorldServer)player.world).getEntityTracker().getTrackingPlayers(player);
-
-                for (EntityPlayer player1 : tracking) {
-                    NetworkHandler.INSTANCE.sendTo(new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, true),
-                            ((EntityPlayerMP)player1).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
-                }
-                NetworkHandler.INSTANCE.sendTo(new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, true),
-                        ((EntityPlayerMP)player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+            if (player instanceof ServerPlayerEntity) {
+                NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
+                        new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false));
             }
             player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS,
                     0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
         }
     }
 
-    public void loadFromNbt(NBTTagCompound compound) {
+    public void loadFromNbt(CompoundNBT compound) {
         this.items = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
         if (compound.contains("Items", 9)) {
@@ -126,22 +125,9 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
         }
     }
 
-    public NBTTagCompound saveToNbt(NBTTagCompound compound) {
+    public CompoundNBT saveToNbt(CompoundNBT compound) {
         ItemStackHelper.saveAllItems(compound, this.items, true);
         return compound;
-    }
-
-    @Nonnull
-    @Override
-    public Container createContainer(@Nonnull InventoryPlayer playerInventory, @Nonnull EntityPlayer playerIn) {
-        return new ContainerShulkerBox(playerInventory, this, playerIn);
-    }
-
-    @Nonnull
-    @Override
-    public ITextComponent getName() {
-        ITextComponent itextcomponent = this.getCustomName();
-        return itextcomponent != null ? itextcomponent : new TextComponentTranslation("container.shulkerBox");
     }
 
     @Override
@@ -184,23 +170,13 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
     }
 
     @Override
-    public boolean isUsableByPlayer(@Nonnull EntityPlayer player) {
-        return true;
-    }
-
-    @Override
     public void markDirty() {
 
     }
 
     @Override
     public boolean isItemValidForSlot(int index, @Nonnull ItemStack stack) {
-        return !(Block.getBlockFromItem(stack.getItem()) instanceof BlockShulkerBox);
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 0;
+        return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
     }
 
     @Override
@@ -208,16 +184,20 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
         this.items.clear();
     }
 
-    public boolean hasCustomName() {
-        return this.customName != null;
+    @Override
+    public boolean isUsableByPlayer(@Nonnull PlayerEntity player) {
+        return true;
     }
 
-    public void setCustomName(@Nullable ITextComponent name) {
-        this.customName = name;
+    @Nonnull
+    @Override
+    public ITextComponent getDisplayName() {
+        return new TranslationTextComponent("container.shulkerBox");
     }
 
     @Nullable
-    public ITextComponent getCustomName() {
-        return this.customName;
+    @Override
+    public Container createMenu(int i, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity playerEntity) {
+        return new ShulkerBoxContainer(i, playerInventory, this);
     }
 }

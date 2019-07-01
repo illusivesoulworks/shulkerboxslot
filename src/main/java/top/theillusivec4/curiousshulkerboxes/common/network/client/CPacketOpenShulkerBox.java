@@ -19,15 +19,14 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.network.client;
 
-import net.minecraft.block.BlockShulkerBox;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.stats.StatList;
 import net.minecraft.stats.Stats;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkHooks;
 import top.theillusivec4.curios.api.CuriosAPI;
-import top.theillusivec4.curiousshulkerboxes.common.inventory.CurioShulkerBoxHandler;
+import top.theillusivec4.curiousshulkerboxes.common.inventory.CurioShulkerBoxInventory;
 
 import java.util.function.Supplier;
 
@@ -45,12 +44,9 @@ public class CPacketOpenShulkerBox {
 
             if (sender != null) {
                 sender.addStat(Stats.OPEN_SHULKER_BOX);
-                CuriosAPI.FinderData shulkerBox = CuriosAPI.getCurioEquipped(stack -> BlockShulkerBox.
-                                getBlockFromItem(stack.getItem()) instanceof BlockShulkerBox, sender);
-
-                if (shulkerBox != null) {
-                    sender.displayGUIChest(new CurioShulkerBoxHandler(shulkerBox.getStack(), shulkerBox.getIdentifier(), shulkerBox.getIndex()));
-                }
+                CuriosAPI.getCurioEquipped(stack -> ShulkerBoxBlock.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock, sender).ifPresent(box -> {
+                    NetworkHooks.openGui(sender, new CurioShulkerBoxInventory(box.getRight(), box.getLeft(), box.getMiddle()));
+                });
             }
         });
         ctx.get().setPacketHandled(true);
