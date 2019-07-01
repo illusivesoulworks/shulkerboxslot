@@ -76,32 +76,28 @@ public class CurioShulkerBoxHandler implements IInventory, IInteractionObject {
     public void openInventory(@Nonnull EntityPlayer player) {
 
         if (!player.isSpectator()) {
-            NBTTagCompound nbttagcompound = shulkerBox.getChildTag("BlockEntityTag");
+            NBTTagCompound nbttagcompound = shulkerBox.getOrCreateChildTag("BlockEntityTag");
+            this.loadFromNbt(nbttagcompound);
+            CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
 
-            if (nbttagcompound != null) {
-                this.loadFromNbt(nbttagcompound);
-                CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
-
-                    if (curio instanceof CurioShulkerBox) {
-                        ((CurioShulkerBox) curio).setAnimationStatus(TileEntityShulkerBox.AnimationStatus.OPENING);
-                    }
-                });
-
-                if (player instanceof EntityPlayerMP) {
-                    Set<? extends EntityPlayer> tracking = ((WorldServer)player.world).getEntityTracker().getTrackingPlayers(player);
-
-                    for (EntityPlayer player1 : tracking) {
-                        NetworkHandler.INSTANCE.sendTo(new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false),
-                                ((EntityPlayerMP)player1).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
-                    }
-                    NetworkHandler.INSTANCE.sendTo(new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false),
-                            ((EntityPlayerMP)player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+                if (curio instanceof CurioShulkerBox) {
+                    ((CurioShulkerBox) curio).setAnimationStatus(TileEntityShulkerBox.AnimationStatus.OPENING);
                 }
-                player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS,
-                        0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
-            }
-        }
+            });
 
+            if (player instanceof EntityPlayerMP) {
+                Set<? extends EntityPlayer> tracking = ((WorldServer)player.world).getEntityTracker().getTrackingPlayers(player);
+
+                for (EntityPlayer player1 : tracking) {
+                    NetworkHandler.INSTANCE.sendTo(new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false),
+                            ((EntityPlayerMP)player1).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+                }
+                NetworkHandler.INSTANCE.sendTo(new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false),
+                        ((EntityPlayerMP)player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+            }
+            player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS,
+                    0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
+        }
     }
 
     @Override
