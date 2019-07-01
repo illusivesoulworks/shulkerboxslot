@@ -106,7 +106,7 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
 
             if (player instanceof ServerPlayerEntity) {
                 NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
-                        new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false));
+                        new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, true));
             }
             player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS,
                     0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
