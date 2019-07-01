@@ -20,7 +20,7 @@ archivesBaseName = "${mod_id}"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
-    mappings channel: 'snapshot', version: "${version_mcp}".toString()
+    mappings channel: "stable", version: "${version_mcp}".toString()
 
     runs {
         client {
@@ -59,7 +59,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
-    deobf "top.theillusivec4.curios:curios:${version_curios}"
+    compile fg.deobf("top.theillusivec4.curios:curios:${version_curios}")
 }
 
 sourceSets {
