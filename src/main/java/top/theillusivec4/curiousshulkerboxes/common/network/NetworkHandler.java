@@ -3,7 +3,8 @@
  *
  * This file is part of Curious Shulker Boxes, a mod made for Minecraft.
  *
- * Curious Shulker Boxes is free software: you can redistribute it and/or modify it
+ * Curious Shulker Boxes is free software: you can redistribute it and/or
+ * modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -14,7 +15,8 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with Curious Shulker Boxes.  If not, see <https://www.gnu.org/licenses/>.
+ * License along with Curious Shulker Boxes.  If not, see <https://www.gnu
+ * .org/licenses/>.
  */
 
 package top.theillusivec4.curiousshulkerboxes.common.network;
@@ -34,25 +36,37 @@ import java.util.function.Supplier;
 
 public class NetworkHandler {
 
-    private static final String PTC_VERSION = "1";
+  private static final String PTC_VERSION = "1";
 
-    public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
-            .named(new ResourceLocation(CuriousShulkerBoxes.MODID, "main"))
-            .networkProtocolVersion(() -> PTC_VERSION)
-            .clientAcceptedVersions(PTC_VERSION::equals)
-            .serverAcceptedVersions(PTC_VERSION::equals)
-            .simpleChannel();
+  public static final SimpleChannel INSTANCE =
+          NetworkRegistry.ChannelBuilder.named(
+                  new ResourceLocation(CuriousShulkerBoxes.MODID, "main"))
+                                        .networkProtocolVersion(
+                                                () -> PTC_VERSION)
+                                        .clientAcceptedVersions(
+                                                PTC_VERSION::equals)
+                                        .serverAcceptedVersions(
+                                                PTC_VERSION::equals)
+                                        .simpleChannel();
 
-    private static int id = 0;
+  private static int id = 0;
 
-    public static void register() {
-        registerMessage(CPacketOpenShulkerBox.class, CPacketOpenShulkerBox::encode, CPacketOpenShulkerBox::decode, CPacketOpenShulkerBox::handle);
-        registerMessage(SPacketSyncAnimation.class, SPacketSyncAnimation::encode, SPacketSyncAnimation::decode, SPacketSyncAnimation::handle);
-    }
+  public static void register() {
 
-    private static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder,
-                                              Function<PacketBuffer, MSG> decoder,
-                                              BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
-        INSTANCE.registerMessage(id++, messageType, encoder, decoder, messageConsumer);
-    }
+    registerMessage(CPacketOpenShulkerBox.class, CPacketOpenShulkerBox::encode,
+                    CPacketOpenShulkerBox::decode,
+                    CPacketOpenShulkerBox::handle);
+    registerMessage(SPacketSyncAnimation.class, SPacketSyncAnimation::encode,
+                    SPacketSyncAnimation::decode, SPacketSyncAnimation::handle);
+  }
+
+  private static <MSG> void registerMessage(Class<MSG> messageType,
+                                            BiConsumer<MSG, PacketBuffer> encoder,
+                                            Function<PacketBuffer, MSG> decoder,
+                                            BiConsumer<MSG,
+                                                    Supplier<NetworkEvent.Context>> messageConsumer) {
+
+    INSTANCE.registerMessage(id++, messageType, encoder, decoder,
+                             messageConsumer);
+  }
 }
