@@ -1,17 +1,19 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url 'https://plugins.gradle.org/m2/' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
         jcenter()
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.2.0'
+        classpath "com.wynprice.cursemaven:CurseMaven:1.1.0"
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.matthewprenger.cursegradle'
+apply plugin: "com.wynprice.cursemaven"
 
 version = "${version_minecraft}-${mod_version}"
 group = "${mod_group}"
@@ -60,6 +62,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
     compile fg.deobf("top.theillusivec4.curios:curios:${version_curios}")
+    compile fg.deobf(curse.resolve('iron-shulker-boxes', '2749126'))
 }
 
 sourceSets {

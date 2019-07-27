@@ -51,12 +51,12 @@ import javax.annotation.Nullable;
 public class CurioShulkerBoxInventory
         implements IInventory, INamedContainerProvider {
 
-  private   NonNullList<ItemStack> items =
-          NonNullList.withSize(27, ItemStack.EMPTY);
-  private   ItemStack              shulkerBox;
-  private   String                 identifier;
-  private   int                    index;
+  protected NonNullList<ItemStack> items;
   protected ITextComponent         customName;
+
+  private ItemStack shulkerBox;
+  private String    identifier;
+  private int       index;
 
   public CurioShulkerBoxInventory(ItemStack shulkerBox, String identifier,
                                   int index) {
@@ -64,6 +64,7 @@ public class CurioShulkerBoxInventory
     this.shulkerBox = shulkerBox;
     this.identifier = identifier;
     this.index = index;
+    this.items = NonNullList.withSize(27, ItemStack.EMPTY);
   }
 
   @Override

@@ -44,12 +44,13 @@ public class CurioShulkerBox implements ICurio {
   private static final String PROGRESS_TAG     = "Progress";
   private static final String OLD_PROGRESS_TAG = "OldProgress";
 
-  private ItemStack                            stack;
+  protected ItemStack stack;
+  protected Object    model;
+
   private ShulkerBoxTileEntity.AnimationStatus animationStatus =
           ShulkerBoxTileEntity.AnimationStatus.CLOSED;
   private float                                progress;
   private float                                progressOld;
-  private Object                               model;
 
   public CurioShulkerBox(ItemStack stack) {
 
