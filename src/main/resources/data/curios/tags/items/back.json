@@ -17,7 +17,9 @@
     "minecraft:brown_shulker_box",
     "minecraft:green_shulker_box",
     "minecraft:red_shulker_box",
-    "minecraft:black_shulker_box",
+    "minecraft:black_shulker_box"
+  ],
+  "optional": [
     "ironshulkerbox:copper_shulker_box_white",
     "ironshulkerbox:crystal_shulker_box_white",
     "ironshulkerbox:diamond_shulker_box_white",
