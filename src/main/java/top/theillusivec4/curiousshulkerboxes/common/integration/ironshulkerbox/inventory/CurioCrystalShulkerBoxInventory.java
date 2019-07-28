@@ -52,6 +52,12 @@ public class CurioCrystalShulkerBoxInventory
     }
   }
 
+  /*
+  * Code is derived from CrystalShulkerBoxTileEntity#sortTopStacks
+  * in the com.progwml6.ironshulkerbox.common.tileentity package
+  * in the Iron Shulker Boxes mod
+  * License: GNU GPLv3
+  */
   public static NonNullList<ItemStack> getTopStacks(
           NonNullList<ItemStack> stacks) {
 

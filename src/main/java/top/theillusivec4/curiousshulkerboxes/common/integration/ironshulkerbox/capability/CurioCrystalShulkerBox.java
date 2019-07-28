@@ -116,6 +116,12 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
     }
   }
 
+  /*
+   * Code is derived from IronShulkerBoxTileEntityRenderer#render
+   * in the com.progwml6.ironshulkerbox.client.renderer package
+   * in the Iron Shulker Boxes mod
+   * License: GNU GPLv3
+   */
   @Override
   public void doRender(String identifier, LivingEntity livingEntity,
                        float limbSwing, float limbSwingAmount,
