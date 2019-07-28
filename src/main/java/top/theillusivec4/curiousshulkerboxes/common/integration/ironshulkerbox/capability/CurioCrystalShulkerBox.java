@@ -19,7 +19,7 @@
  * .org/licenses/>.
  */
 
-package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.curio;
+package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.capability;
 
 import com.google.common.primitives.SignedBytes;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -45,6 +45,8 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
            {-0.075F, 0.325F, 0.175F}, {0.075F, 0.325F, 0.175F},
            {-0.075F, 0.175F, 0.175F}, {0.075F, 0.175F, 0.175F},
            {0.0F, 0.25F, 0.25F}};
+
+  private static final String TOP_STACKS_TAG = "TopStacks";
 
   private final Random rand = new Random();
 
@@ -77,13 +79,22 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
   @Override
   public CompoundNBT getSyncTag() {
 
-    return ItemStackHelper.saveAllItems(new CompoundNBT(), this.topStacks);
+    CompoundNBT compound = super.getSyncTag();
+    CompoundNBT stacksCompound =
+            ItemStackHelper.saveAllItems(new CompoundNBT(), this.topStacks);
+    compound.put(TOP_STACKS_TAG, stacksCompound);
+    return compound;
   }
 
   @Override
   public void readSyncTag(CompoundNBT compound) {
 
-    ItemStackHelper.loadAllItems(compound, this.topStacks);
+    super.readSyncTag(compound);
+
+    if (compound.contains(TOP_STACKS_TAG)) {
+      ItemStackHelper.loadAllItems(compound.getCompound(TOP_STACKS_TAG),
+                                   this.topStacks);
+    }
   }
 
   @Override

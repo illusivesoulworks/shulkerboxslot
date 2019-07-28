@@ -49,8 +49,8 @@ import top.theillusivec4.curiousshulkerboxes.client.EventHandlerClient;
 import top.theillusivec4.curiousshulkerboxes.client.KeyRegistry;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.curio.CurioCrystalShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.curio.CurioIronShulkerBox;
+import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.capability.CurioCrystalShulkerBox;
+import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.capability.CurioIronShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 
 import javax.annotation.Nonnull;

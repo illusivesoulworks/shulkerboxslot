@@ -17,7 +17,7 @@
  * License along with Curious Shulker Boxes.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.curio;
+package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.capability;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.progwml6.ironshulkerbox.common.blocks.ShulkerBoxBlock;

@@ -25,7 +25,7 @@ import com.progwml6.ironshulkerbox.common.blocks.ShulkerBoxType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import top.theillusivec4.curios.api.CuriosAPI;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.curio.CurioCrystalShulkerBox;
+import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.capability.CurioCrystalShulkerBox;
 
 public class CurioCrystalShulkerBoxInventory
         extends CurioIronShulkerBoxInventory {
