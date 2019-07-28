@@ -48,8 +48,9 @@ import top.theillusivec4.curios.api.imc.CurioIMCMessage;
 import top.theillusivec4.curiousshulkerboxes.client.EventHandlerClient;
 import top.theillusivec4.curiousshulkerboxes.client.KeyRegistry;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.CurioIronShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
+import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.curio.CurioCrystalShulkerBox;
+import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.curio.CurioIronShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 
 import javax.annotation.Nonnull;
@@ -99,9 +100,15 @@ public class CuriousShulkerBoxes {
     Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
 
     if (isShulkerBox(block)) {
-      CurioShulkerBox curioShulkerBox =
-              block instanceof ShulkerBoxBlock ? new CurioShulkerBox(stack)
-                                               : new CurioIronShulkerBox(stack);
+      CurioShulkerBox curioShulkerBox;
+
+      if (block instanceof ShulkerBoxBlock) {
+        curioShulkerBox = new CurioShulkerBox(stack);
+      } else if (IronShulkerBoxIntegration.isCrystalShulkerBox(block)) {
+        curioShulkerBox = new CurioCrystalShulkerBox(stack);
+      } else {
+        curioShulkerBox = new CurioIronShulkerBox(stack);
+      }
 
       evt.addCapability(CuriosCapability.ID_ITEM, new ICapabilityProvider() {
         LazyOptional<ICurio> curio = LazyOptional.of(() -> curioShulkerBox);

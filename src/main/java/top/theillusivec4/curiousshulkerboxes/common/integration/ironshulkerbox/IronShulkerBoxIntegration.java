@@ -21,11 +21,14 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox;
 
+import com.progwml6.ironshulkerbox.common.blocks.CrystalShulkerBoxBlock;
 import com.progwml6.ironshulkerbox.common.blocks.ShulkerBoxBlock;
 import com.progwml6.ironshulkerbox.common.blocks.ShulkerBoxType;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.inventory.CurioCrystalShulkerBoxInventory;
+import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.inventory.CurioIronShulkerBoxInventory;
 
 public class IronShulkerBoxIntegration {
 
@@ -34,11 +37,25 @@ public class IronShulkerBoxIntegration {
     return block instanceof ShulkerBoxBlock;
   }
 
+  public static boolean isCrystalShulkerBox(Block block) {
+
+    return block instanceof CrystalShulkerBoxBlock;
+  }
+
   public static INamedContainerProvider createContainer(ItemStack stack,
                                                         String identifier,
                                                         int index) {
 
     ShulkerBoxType type = ShulkerBoxBlock.getTypeFromItem(stack.getItem());
-    return new CurioIronShulkerBoxInventory(type, stack, identifier, index);
+    INamedContainerProvider container;
+
+    if (type == ShulkerBoxType.CRYSTAL) {
+      container = new CurioCrystalShulkerBoxInventory(stack, identifier, index);
+    } else {
+      container =
+              new CurioIronShulkerBoxInventory(type, stack, identifier, index);
+    }
+
+    return container;
   }
 }

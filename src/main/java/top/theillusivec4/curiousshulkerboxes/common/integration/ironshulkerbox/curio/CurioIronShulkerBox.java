@@ -3,8 +3,7 @@
  *
  * This file is part of Curious Shulker Boxes, a mod made for Minecraft.
  *
- * Curious Shulker Boxes is free software: you can redistribute it and/or
- * modify it
+ * Curious Shulker Boxes is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -15,11 +14,10 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with Curious Shulker Boxes.  If not, see <https://www.gnu
- * .org/licenses/>.
+ * License along with Curious Shulker Boxes.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox;
+package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.curio;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.progwml6.ironshulkerbox.common.blocks.ShulkerBoxBlock;
@@ -35,12 +33,9 @@ import net.minecraft.util.ResourceLocation;
 import top.theillusivec4.curios.api.capability.ICurio;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 
-import java.util.Random;
-
 public class CurioIronShulkerBox extends CurioShulkerBox {
 
   private ShulkerBoxType shulkerBoxType;
-  private Random random;
 
   public CurioIronShulkerBox(ItemStack stack) {
 
@@ -99,24 +94,5 @@ public class CurioIronShulkerBox extends CurioShulkerBox {
     GlStateManager.disableRescaleNormal();
     GlStateManager.popMatrix();
     GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-//    if (shulkerBoxType == ShulkerBoxType.CRYSTAL) {
-//      GlStateManager.enableCull();
-//    }
-//
-//    if (shulkerBoxType.isTransparent()) {
-//      return;
-//    }
-//
-//    this.random.setSeed(254L);
-//    float shiftX;
-//    float shiftY;
-//    float shiftZ;
-//    int shift = 0;
-//    float blockScale = 0.7F;
-//    float timeD =
-//            (float) (360D * (System.currentTimeMillis() & 0x3FFFL / 0x3FFFL) - partialTicks);
-//
-//    if ()
   }
 }
