@@ -21,14 +21,21 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.network.client;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.stats.Stats;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
+import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.inventory.CurioShulkerBoxInventory;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class CPacketOpenShulkerBox {
@@ -53,12 +60,30 @@ public class CPacketOpenShulkerBox {
       }
 
       sender.addStat(Stats.OPEN_SHULKER_BOX);
-      CuriousShulkerBoxes.getCurioShulkerBox(sender)
-                         .ifPresent(box -> NetworkHooks.openGui(sender,
-                                                                new CurioShulkerBoxInventory(
-                                                                        box.getRight(),
-                                                                        box.getLeft(),
-                                                                        box.getMiddle())));
+
+      Optional<ImmutableTriple<String, Integer, ItemStack>> curioShulkerBox =
+              CuriousShulkerBoxes.getCurioShulkerBox(sender);
+
+      curioShulkerBox.ifPresent(box -> {
+        ItemStack stack = box.getRight();
+        String identifier = box.getLeft();
+        int index = box.getMiddle();
+        Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
+        boolean isIronShulkerBox = CuriousShulkerBoxes.isIronShulkerBoxLoaded &&
+                                   IronShulkerBoxIntegration.isIronShulkerBox(
+                                           block);
+        INamedContainerProvider container;
+
+        if (isIronShulkerBox) {
+          container =
+                  IronShulkerBoxIntegration.createContainer(stack, identifier,
+                                                            index);
+        } else {
+          container = new CurioShulkerBoxInventory(stack, identifier, index);
+        }
+
+        NetworkHooks.openGui(sender, container);
+      });
     });
     ctx.get().setPacketHandled(true);
   }
