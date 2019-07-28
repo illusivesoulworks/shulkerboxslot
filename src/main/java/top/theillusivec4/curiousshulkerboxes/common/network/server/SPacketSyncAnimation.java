@@ -21,6 +21,7 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.network.server;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -31,6 +32,7 @@ import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
 import top.theillusivec4.curios.api.CuriosAPI;
 import top.theillusivec4.curios.api.inventory.CurioStackHandler;
+import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 
 import java.util.function.Supplier;
@@ -82,9 +84,9 @@ public class SPacketSyncAnimation {
 
         if (stackHandler != null && msg.index < stackHandler.getSlots()) {
           ItemStack stack = stackHandler.getStackInSlot(msg.index);
+          Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
 
-          if (ShulkerBoxBlock.getBlockFromItem(
-                  stack.getItem()) instanceof ShulkerBoxBlock) {
+          if (CuriousShulkerBoxes.isShulkerBox(block)) {
             CuriosAPI.getCurio(stack).ifPresent(curio -> {
 
               if (curio instanceof CurioShulkerBox) {
