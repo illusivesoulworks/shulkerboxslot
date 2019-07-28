@@ -23,6 +23,7 @@ package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.
 
 import com.google.common.primitives.SignedBytes;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.progwml6.ironshulkerbox.common.blocks.ShulkerBoxType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -33,6 +34,7 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
+import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.inventory.CurioCrystalShulkerBoxInventory;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
@@ -59,7 +61,20 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
   public CurioCrystalShulkerBox(ItemStack stack) {
 
     super(stack);
+    this.shouldSyncTopStacks = false;
     this.topStacks = NonNullList.withSize(8, ItemStack.EMPTY);
+    CompoundNBT compound = stack.getChildTag("BlockEntityTag");
+
+    if (compound != null) {
+      NonNullList<ItemStack> stacks =
+              NonNullList.withSize(ShulkerBoxType.CRYSTAL.size,
+                                   ItemStack.EMPTY);
+
+      if (compound.contains("Items", 9)) {
+        ItemStackHelper.loadAllItems(compound, stacks);
+      }
+      this.setTopStacks(CurioCrystalShulkerBoxInventory.getTopStacks(stacks));
+    }
   }
 
   public void setTopStacks(NonNullList<ItemStack> stacks) {
@@ -72,7 +87,11 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
   public boolean shouldSyncToTracking(String identifier,
                                       LivingEntity livingEntity) {
 
-    return shouldSyncTopStacks;
+    if (shouldSyncTopStacks) {
+      shouldSyncTopStacks = false;
+      return true;
+    }
+    return false;
   }
 
   @Nonnull

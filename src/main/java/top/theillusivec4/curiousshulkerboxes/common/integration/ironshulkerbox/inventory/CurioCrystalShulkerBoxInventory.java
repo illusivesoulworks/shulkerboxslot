@@ -48,19 +48,18 @@ public class CurioCrystalShulkerBoxInventory
   public void markDirty() {
 
     if (this.crystalShulkerBox != null) {
-      this.crystalShulkerBox.setTopStacks(getTopStacks());
+      this.crystalShulkerBox.setTopStacks(getTopStacks(this.items));
     }
   }
 
-  private NonNullList<ItemStack> getTopStacks() {
+  public static NonNullList<ItemStack> getTopStacks(NonNullList<ItemStack> stacks) {
     NonNullList<ItemStack> topStacks = NonNullList.withSize(8, ItemStack.EMPTY);
     NonNullList<ItemStack> copy =
-            NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+            NonNullList.withSize(stacks.size(), ItemStack.EMPTY);
     int compressedIndex = 0;
 
     mainLoop:
-    for (int i = 0; i < this.getSizeInventory(); i++) {
-      ItemStack stack = this.items.get(i);
+    for (ItemStack stack: stacks) {
 
       if (stack.isEmpty()) {
         continue;
