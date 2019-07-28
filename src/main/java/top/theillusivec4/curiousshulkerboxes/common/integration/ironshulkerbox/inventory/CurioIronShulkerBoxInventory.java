@@ -3,7 +3,8 @@
  *
  * This file is part of Curious Shulker Boxes, a mod made for Minecraft.
  *
- * Curious Shulker Boxes is free software: you can redistribute it and/or modify it
+ * Curious Shulker Boxes is free software: you can redistribute it and/or
+ * modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -14,7 +15,8 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with Curious Shulker Boxes.  If not, see <https://www.gnu.org/licenses/>.
+ * License along with Curious Shulker Boxes.  If not, see <https://www.gnu
+ * .org/licenses/>.
  */
 
 package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.inventory;

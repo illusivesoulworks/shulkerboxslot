@@ -52,14 +52,16 @@ public class CurioCrystalShulkerBoxInventory
     }
   }
 
-  public static NonNullList<ItemStack> getTopStacks(NonNullList<ItemStack> stacks) {
+  public static NonNullList<ItemStack> getTopStacks(
+          NonNullList<ItemStack> stacks) {
+
     NonNullList<ItemStack> topStacks = NonNullList.withSize(8, ItemStack.EMPTY);
     NonNullList<ItemStack> copy =
             NonNullList.withSize(stacks.size(), ItemStack.EMPTY);
     int compressedIndex = 0;
 
     mainLoop:
-    for (ItemStack stack: stacks) {
+    for (ItemStack stack : stacks) {
 
       if (stack.isEmpty()) {
         continue;
