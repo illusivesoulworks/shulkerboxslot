@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project does not adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [0.8] - 2019.07.30
+### Fixed
+- Fixed datapack reloading on dedicated servers [#2](https://github.com/TheIllusiveC4/CuriousShulkerBoxes/issues/2)
+
 ## [0.7] - 2019.07.28
 ### Added
 - Iron Shulker Boxes integration
