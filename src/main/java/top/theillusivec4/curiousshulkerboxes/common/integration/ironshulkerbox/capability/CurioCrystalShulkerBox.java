@@ -55,8 +55,8 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
   private NonNullList<ItemStack> topStacks;
   private boolean                shouldSyncTopStacks;
 
-  private ItemEntity   customItem;
-  private ItemRenderer customRenderer;
+  private ItemEntity customItem;
+  private Object     customRenderer;
 
   public CurioCrystalShulkerBox(ItemStack stack) {
 
@@ -198,7 +198,10 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
         };
       }
 
-      this.customRenderer.doRender(customItem, 0D, 0D, 0D, 0F, partialTicks);
+      if (this.customRenderer instanceof ItemRenderer) {
+        ItemRenderer renderer = (ItemRenderer) this.customRenderer;
+        renderer.doRender(customItem, 0D, 0D, 0D, 0F, partialTicks);
+      }
       GlStateManager.popMatrix();
     }
 
