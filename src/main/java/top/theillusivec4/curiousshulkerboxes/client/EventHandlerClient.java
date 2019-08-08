@@ -22,8 +22,8 @@
 package top.theillusivec4.curiousshulkerboxes.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 import top.theillusivec4.curiousshulkerboxes.common.network.client.CPacketOpenShulkerBox;
 
