@@ -7,8 +7,8 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.2.0'
-        classpath "com.wynprice.cursemaven:CurseMaven:1.1.0"
+        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
+        classpath "com.wynprice.cursemaven:CurseMaven:1.2.2"
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -62,7 +62,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
     compile fg.deobf("top.theillusivec4.curios:curios:${version_curios}")
-    compileOnly fg.deobf(curse.resolve('iron-shulker-boxes', '2749126'))
+    compileOnly fg.deobf(curse.resolve('iron-shulker-boxes', '2783918'))
 }
 
 sourceSets {
