@@ -74,6 +74,24 @@ public class CuriousShulkerBoxes {
     isIronShulkerBoxLoaded = ModList.get().isLoaded("ironshulkerbox");
   }
 
+  public static boolean isShulkerBox(Block block) {
+
+    boolean isIronShulkerBox =
+        isIronShulkerBoxLoaded && IronShulkerBoxIntegration.isIronShulkerBox(block);
+    return block instanceof ShulkerBoxBlock || isIronShulkerBox;
+  }
+
+  public static Optional<ImmutableTriple<String, Integer, ItemStack>> getCurioShulkerBox(
+      LivingEntity livingEntity) {
+
+    Predicate<ItemStack> shulkerBox = stack -> {
+      Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
+      return isShulkerBox(block);
+    };
+
+    return CuriosAPI.getCurioEquipped(shulkerBox, livingEntity);
+  }
+
   private void setup(final FMLCommonSetupEvent evt) {
 
     MinecraftForge.EVENT_BUS.register(this);
@@ -120,23 +138,5 @@ public class CuriousShulkerBoxes {
         }
       });
     }
-  }
-
-  public static boolean isShulkerBox(Block block) {
-
-    boolean isIronShulkerBox =
-        isIronShulkerBoxLoaded && IronShulkerBoxIntegration.isIronShulkerBox(block);
-    return block instanceof ShulkerBoxBlock || isIronShulkerBox;
-  }
-
-  public static Optional<ImmutableTriple<String, Integer, ItemStack>> getCurioShulkerBox(
-      LivingEntity livingEntity) {
-
-    Predicate<ItemStack> shulkerBox = stack -> {
-      Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
-      return isShulkerBox(block);
-    };
-
-    return CuriosAPI.getCurioEquipped(shulkerBox, livingEntity);
   }
 }

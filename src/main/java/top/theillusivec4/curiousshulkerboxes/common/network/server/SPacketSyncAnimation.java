@@ -61,8 +61,8 @@ public class SPacketSyncAnimation {
 
   public static SPacketSyncAnimation decode(PacketBuffer buf) {
 
-    return new SPacketSyncAnimation(buf.readInt(), buf.readString(25),
-        buf.readInt(), buf.readBoolean());
+    return new SPacketSyncAnimation(buf.readInt(), buf.readString(25), buf.readInt(),
+        buf.readBoolean());
   }
 
   public static void handle(SPacketSyncAnimation msg, Supplier<NetworkEvent.Context> ctx) {

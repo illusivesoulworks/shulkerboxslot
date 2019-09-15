@@ -44,19 +44,13 @@ public class NetworkHandler {
   public static void register() {
     INSTANCE = NetworkRegistry.ChannelBuilder
         .named(new ResourceLocation(CuriousShulkerBoxes.MODID, "main"))
-        .networkProtocolVersion(() -> PTC_VERSION)
-        .clientAcceptedVersions(PTC_VERSION::equals)
-        .serverAcceptedVersions(PTC_VERSION::equals)
-        .simpleChannel();
+        .networkProtocolVersion(() -> PTC_VERSION).clientAcceptedVersions(PTC_VERSION::equals)
+        .serverAcceptedVersions(PTC_VERSION::equals).simpleChannel();
 
-    registerMessage(CPacketOpenShulkerBox.class,
-        CPacketOpenShulkerBox::encode,
-        CPacketOpenShulkerBox::decode,
-        CPacketOpenShulkerBox::handle);
-    registerMessage(SPacketSyncAnimation.class,
-        SPacketSyncAnimation::encode,
-        SPacketSyncAnimation::decode,
-        SPacketSyncAnimation::handle);
+    registerMessage(CPacketOpenShulkerBox.class, CPacketOpenShulkerBox::encode,
+        CPacketOpenShulkerBox::decode, CPacketOpenShulkerBox::handle);
+    registerMessage(SPacketSyncAnimation.class, SPacketSyncAnimation::encode,
+        SPacketSyncAnimation::decode, SPacketSyncAnimation::handle);
   }
 
   private static <M> void registerMessage(Class<M> messageType, BiConsumer<M, PacketBuffer> encoder,

@@ -27,8 +27,7 @@ import net.minecraft.util.NonNullList;
 import top.theillusivec4.curios.api.CuriosAPI;
 import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.capability.CurioCrystalShulkerBox;
 
-public class CurioCrystalShulkerBoxInventory
-        extends CurioIronShulkerBoxInventory {
+public class CurioCrystalShulkerBoxInventory extends CurioIronShulkerBoxInventory {
 
   private CurioCrystalShulkerBox crystalShulkerBox;
 
@@ -43,19 +42,11 @@ public class CurioCrystalShulkerBoxInventory
     });
   }
 
-  @Override
-  public void markDirty() {
-
-    if (this.crystalShulkerBox != null) {
-      this.crystalShulkerBox.setTopStacks(getTopStacks(this.items));
-    }
-  }
-
   /*
-  * Code is derived from CrystalShulkerBoxTileEntity#sortTopStacks in the
-  * com.progwml6.ironshulkerbox.common.tileentity package in the Iron Shulker Boxes mod.
-  * License: GNU GPLv3
-  */
+   * Code is derived from CrystalShulkerBoxTileEntity#sortTopStacks in the
+   * com.progwml6.ironshulkerbox.common.tileentity package in the Iron Shulker Boxes mod.
+   * License: GNU GPLv3
+   */
   public static NonNullList<ItemStack> getTopStacks(NonNullList<ItemStack> stacks) {
 
     NonNullList<ItemStack> topStacks = NonNullList.withSize(8, ItemStack.EMPTY);
@@ -118,5 +109,13 @@ public class CurioCrystalShulkerBoxInventory
     }
 
     return topStacks;
+  }
+
+  @Override
+  public void markDirty() {
+
+    if (this.crystalShulkerBox != null) {
+      this.crystalShulkerBox.setTopStacks(getTopStacks(this.items));
+    }
   }
 }

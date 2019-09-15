@@ -47,8 +47,7 @@ import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 import top.theillusivec4.curiousshulkerboxes.common.network.server.SPacketSyncAnimation;
 
-public class CurioShulkerBoxInventory
-    implements IInventory, INamedContainerProvider {
+public class CurioShulkerBoxInventory implements IInventory, INamedContainerProvider {
 
   protected NonNullList<ItemStack> items;
   protected ITextComponent customName;

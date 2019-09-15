@@ -40,12 +40,10 @@ import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.i
 
 public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
 
-  private static final float[][] SHIFTS =
-      {{-0.075F, 0.325F, 0.325F}, {0.075F, 0.325F, 0.325F},
-          {-0.075F, 0.175F, 0.325F}, {0.075F, 0.175F, 0.325F},
-          {-0.075F, 0.325F, 0.175F}, {0.075F, 0.325F, 0.175F},
-          {-0.075F, 0.175F, 0.175F}, {0.075F, 0.175F, 0.175F},
-          {0.0F, 0.25F, 0.25F}};
+  private static final float[][] SHIFTS = {{-0.075F, 0.325F, 0.325F}, {0.075F, 0.325F, 0.325F},
+      {-0.075F, 0.175F, 0.325F}, {0.075F, 0.175F, 0.325F}, {-0.075F, 0.325F, 0.175F},
+      {0.075F, 0.325F, 0.175F}, {-0.075F, 0.175F, 0.175F}, {0.075F, 0.175F, 0.175F},
+      {0.0F, 0.25F, 0.25F}};
 
   private static final String TOP_STACKS_TAG = "TopStacks";
 
@@ -83,8 +81,7 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
   }
 
   @Override
-  public boolean shouldSyncToTracking(String identifier,
-      LivingEntity livingEntity) {
+  public boolean shouldSyncToTracking(String identifier, LivingEntity livingEntity) {
 
     if (shouldSyncTopStacks) {
       shouldSyncTopStacks = false;
@@ -133,7 +130,8 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
     float shiftZ;
     int shift = 0;
     float blockScale = 0.32F;
-    float timeDiff = (float) (360D * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL) - partialTicks;
+    float timeDiff =
+        (float) (360D * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL) - partialTicks;
 
     if (topStacks.get(1).isEmpty()) {
       shift = 8;
@@ -167,15 +165,13 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
       if (this.customRenderer == null) {
         Minecraft minecraft = Minecraft.getInstance();
         EntityRendererManager rendererManager = minecraft.getRenderManager();
-        net.minecraft.client.renderer.ItemRenderer itemRenderer =
-            minecraft.getItemRenderer();
+        net.minecraft.client.renderer.ItemRenderer itemRenderer = minecraft.getItemRenderer();
         this.customRenderer = new ItemRenderer(rendererManager, itemRenderer) {
 
           @Override
           public int getModelCount(ItemStack stack) {
 
-            return SignedBytes.saturatedCast(
-                Math.min(stack.getCount() / 32, 15) + 1);
+            return SignedBytes.saturatedCast(Math.min(stack.getCount() / 32, 15) + 1);
           }
 
           @Override
@@ -196,6 +192,7 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
         ItemRenderer renderer = (ItemRenderer) this.customRenderer;
         renderer.doRender(customItem, 0D, 0D, 0D, 0F, partialTicks);
       }
+
       GlStateManager.popMatrix();
     }
 

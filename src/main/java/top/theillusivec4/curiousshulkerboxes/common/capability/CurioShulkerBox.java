@@ -180,8 +180,7 @@ public class CurioShulkerBox implements ICurio {
     if (color == null) {
       textureManager.bindTexture(ShulkerRenderer.field_204402_a);
     } else {
-      textureManager.bindTexture(
-          ShulkerRenderer.SHULKER_ENDERGOLEM_TEXTURE[color.getId()]);
+      textureManager.bindTexture(ShulkerRenderer.SHULKER_ENDERGOLEM_TEXTURE[color.getId()]);
     }
 
     GlStateManager.pushMatrix();
