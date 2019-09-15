@@ -22,6 +22,7 @@
 package top.theillusivec4.curiousshulkerboxes.common.capability;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import javax.annotation.Nonnull;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ShulkerRenderer;
@@ -36,21 +37,18 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import top.theillusivec4.curios.api.capability.ICurio;
 
-import javax.annotation.Nonnull;
-
 public class CurioShulkerBox implements ICurio {
 
-  private static final String ANIMATION_TAG    = "Animation";
-  private static final String PROGRESS_TAG     = "Progress";
+  private static final String ANIMATION_TAG = "Animation";
+  private static final String PROGRESS_TAG = "Progress";
   private static final String OLD_PROGRESS_TAG = "OldProgress";
 
   protected ItemStack stack;
-  protected Object    model;
+  protected Object model;
 
-  private ShulkerBoxTileEntity.AnimationStatus animationStatus =
-          ShulkerBoxTileEntity.AnimationStatus.CLOSED;
-  private float                                progress;
-  private float                                progressOld;
+  private ShulkerBoxTileEntity.AnimationStatus animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
+  private float progress;
+  private float progressOld;
 
   public CurioShulkerBox(ItemStack stack) {
 
@@ -98,9 +96,9 @@ public class CurioShulkerBox implements ICurio {
   @Override
   public void playEquipSound(LivingEntity livingEntity) {
 
-    livingEntity.world.playSound(null, livingEntity.getPosition(),
-                                 SoundEvents.BLOCK_SHULKER_BOX_CLOSE,
-                                 SoundCategory.NEUTRAL, 1.0F, 1.0F);
+    livingEntity.world
+        .playSound(null, livingEntity.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE,
+            SoundCategory.NEUTRAL, 1.0F, 1.0F);
   }
 
   @Override
@@ -110,8 +108,7 @@ public class CurioShulkerBox implements ICurio {
   }
 
   @Override
-  public boolean shouldSyncToTracking(String identifier,
-                                      LivingEntity livingEntity) {
+  public boolean shouldSyncToTracking(String identifier, LivingEntity livingEntity) {
 
     return true;
   }
@@ -168,10 +165,9 @@ public class CurioShulkerBox implements ICurio {
   }
 
   @Override
-  public void doRender(String identifier, LivingEntity livingEntity,
-                       float limbSwing, float limbSwingAmount,
-                       float partialTicks, float ageInTicks, float netHeadYaw,
-                       float headPitch, float scale) {
+  public void doRender(String identifier, LivingEntity livingEntity, float limbSwing,
+      float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+      float headPitch, float scale) {
 
     GlStateManager.enableDepthTest();
     GlStateManager.depthFunc(515);
@@ -180,12 +176,14 @@ public class CurioShulkerBox implements ICurio {
     TextureManager textureManager = Minecraft.getInstance().getTextureManager();
     ICurio.RenderHelper.rotateIfSneaking(livingEntity);
     DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
+
     if (color == null) {
       textureManager.bindTexture(ShulkerRenderer.field_204402_a);
     } else {
       textureManager.bindTexture(
-              ShulkerRenderer.SHULKER_ENDERGOLEM_TEXTURE[color.getId()]);
+          ShulkerRenderer.SHULKER_ENDERGOLEM_TEXTURE[color.getId()]);
     }
+
     GlStateManager.pushMatrix();
     GlStateManager.enableRescaleNormal();
     GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -199,12 +197,11 @@ public class CurioShulkerBox implements ICurio {
     if (!(this.model instanceof ShulkerModel)) {
       this.model = new ShulkerModel<>();
     }
+
     ShulkerModel model = (ShulkerModel) this.model;
     model.getBase().render(0.0625F);
-    GlStateManager.translatef(0.0F, -this.getProgress(partialTicks) * 0.5F,
-                              0.0F);
-    GlStateManager.rotatef(270.0F * this.getProgress(partialTicks), 0.0F, 1.0F,
-                           0.0F);
+    GlStateManager.translatef(0.0F, -this.getProgress(partialTicks) * 0.5F, 0.0F);
+    GlStateManager.rotatef(270.0F * this.getProgress(partialTicks), 0.0F, 1.0F, 0.0F);
     model.getLid().render(0.0625F);
     GlStateManager.enableCull();
     GlStateManager.disableRescaleNormal();

@@ -24,6 +24,8 @@ package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.
 import com.progwml6.ironshulkerbox.common.blocks.ShulkerBoxType;
 import com.progwml6.ironshulkerbox.common.inventory.ShulkerBoxContainer;
 import com.progwml6.ironshulkerbox.common.inventory.ShulkerBoxContainerType;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,16 +37,13 @@ import net.minecraft.util.NonNullList;
 import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
 import top.theillusivec4.curiousshulkerboxes.common.inventory.CurioShulkerBoxInventory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 public class CurioIronShulkerBoxInventory extends CurioShulkerBoxInventory {
 
-  private ShulkerBoxType                     shulkerBoxType;
+  private ShulkerBoxType shulkerBoxType;
   private ContainerType<ShulkerBoxContainer> containerType;
 
-  public CurioIronShulkerBoxInventory(ShulkerBoxType type, ItemStack shulkerBox,
-                                      String identifier, int index) {
+  public CurioIronShulkerBoxInventory(ShulkerBoxType type, ItemStack shulkerBox, String identifier,
+      int index) {
 
     super(shulkerBox, identifier, index);
     this.shulkerBoxType = type;
@@ -86,9 +85,9 @@ public class CurioIronShulkerBoxInventory extends CurioShulkerBoxInventory {
   @Nullable
   @Override
   public Container createMenu(int i, @Nonnull PlayerInventory playerInventory,
-                              @Nonnull PlayerEntity playerEntity) {
+      @Nonnull PlayerEntity playerEntity) {
 
     return new ShulkerBoxContainer(this.containerType, i, playerInventory, this,
-                                   this.shulkerBoxType);
+        this.shulkerBoxType);
   }
 }

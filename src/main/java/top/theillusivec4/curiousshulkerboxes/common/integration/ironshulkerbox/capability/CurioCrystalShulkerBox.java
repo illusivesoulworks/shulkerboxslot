@@ -24,6 +24,8 @@ package top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.
 import com.google.common.primitives.SignedBytes;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.progwml6.ironshulkerbox.common.blocks.ShulkerBoxType;
+import java.util.Random;
+import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -36,27 +38,24 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.inventory.CurioCrystalShulkerBoxInventory;
 
-import javax.annotation.Nonnull;
-import java.util.Random;
-
 public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
 
   private static final float[][] SHIFTS =
-          {{-0.075F, 0.325F, 0.325F}, {0.075F, 0.325F, 0.325F},
-           {-0.075F, 0.175F, 0.325F}, {0.075F, 0.175F, 0.325F},
-           {-0.075F, 0.325F, 0.175F}, {0.075F, 0.325F, 0.175F},
-           {-0.075F, 0.175F, 0.175F}, {0.075F, 0.175F, 0.175F},
-           {0.0F, 0.25F, 0.25F}};
+      {{-0.075F, 0.325F, 0.325F}, {0.075F, 0.325F, 0.325F},
+          {-0.075F, 0.175F, 0.325F}, {0.075F, 0.175F, 0.325F},
+          {-0.075F, 0.325F, 0.175F}, {0.075F, 0.325F, 0.175F},
+          {-0.075F, 0.175F, 0.175F}, {0.075F, 0.175F, 0.175F},
+          {0.0F, 0.25F, 0.25F}};
 
   private static final String TOP_STACKS_TAG = "TopStacks";
 
   private final Random rand = new Random();
 
   private NonNullList<ItemStack> topStacks;
-  private boolean                shouldSyncTopStacks;
+  private boolean shouldSyncTopStacks;
 
   private ItemEntity customItem;
-  private Object     customRenderer;
+  private Object customRenderer;
 
   public CurioCrystalShulkerBox(ItemStack stack) {
 
@@ -66,13 +65,13 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
     CompoundNBT compound = stack.getChildTag("BlockEntityTag");
 
     if (compound != null) {
-      NonNullList<ItemStack> stacks =
-              NonNullList.withSize(ShulkerBoxType.CRYSTAL.size,
-                                   ItemStack.EMPTY);
+      NonNullList<ItemStack> stacks = NonNullList
+          .withSize(ShulkerBoxType.CRYSTAL.size, ItemStack.EMPTY);
 
       if (compound.contains("Items", 9)) {
         ItemStackHelper.loadAllItems(compound, stacks);
       }
+
       this.setTopStacks(CurioCrystalShulkerBoxInventory.getTopStacks(stacks));
     }
   }
@@ -85,12 +84,13 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
 
   @Override
   public boolean shouldSyncToTracking(String identifier,
-                                      LivingEntity livingEntity) {
+      LivingEntity livingEntity) {
 
     if (shouldSyncTopStacks) {
       shouldSyncTopStacks = false;
       return true;
     }
+
     return false;
   }
 
@@ -99,8 +99,7 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
   public CompoundNBT getSyncTag() {
 
     CompoundNBT compound = super.getSyncTag();
-    CompoundNBT stacksCompound =
-            ItemStackHelper.saveAllItems(new CompoundNBT(), this.topStacks);
+    CompoundNBT stacksCompound = ItemStackHelper.saveAllItems(new CompoundNBT(), this.topStacks);
     compound.put(TOP_STACKS_TAG, stacksCompound);
     return compound;
   }
@@ -111,25 +110,22 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
     super.readSyncTag(compound);
 
     if (compound.contains(TOP_STACKS_TAG)) {
-      ItemStackHelper.loadAllItems(compound.getCompound(TOP_STACKS_TAG),
-                                   this.topStacks);
+      ItemStackHelper.loadAllItems(compound.getCompound(TOP_STACKS_TAG), this.topStacks);
     }
   }
 
   /*
-   * Code is derived from IronShulkerBoxTileEntityRenderer#render
-   * in the com.progwml6.ironshulkerbox.client.renderer package
-   * in the Iron Shulker Boxes mod
+   * Code is derived from IronShulkerBoxTileEntityRenderer#render in the
+   * com.progwml6.ironshulkerbox.client.renderer package in the Iron Shulker Boxes mod.
    * License: GNU GPLv3
    */
   @Override
-  public void doRender(String identifier, LivingEntity livingEntity,
-                       float limbSwing, float limbSwingAmount,
-                       float partialTicks, float ageInTicks, float netHeadYaw,
-                       float headPitch, float scale) {
+  public void doRender(String identifier, LivingEntity livingEntity, float limbSwing,
+      float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+      float headPitch, float scale) {
 
-    super.doRender(identifier, livingEntity, limbSwing, limbSwingAmount,
-                   partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
+    super.doRender(identifier, livingEntity, limbSwing, limbSwingAmount, partialTicks, ageInTicks,
+        netHeadYaw, headPitch, scale);
     GlStateManager.enableCull();
     this.rand.setSeed(254L);
     float shiftX;
@@ -137,9 +133,7 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
     float shiftZ;
     int shift = 0;
     float blockScale = 0.32F;
-    float timeDiff =
-            (float) (360D * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL) -
-            partialTicks;
+    float timeDiff = (float) (360D * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL) - partialTicks;
 
     if (topStacks.get(1).isEmpty()) {
       shift = 8;
@@ -174,14 +168,14 @@ public class CurioCrystalShulkerBox extends CurioIronShulkerBox {
         Minecraft minecraft = Minecraft.getInstance();
         EntityRendererManager rendererManager = minecraft.getRenderManager();
         net.minecraft.client.renderer.ItemRenderer itemRenderer =
-                minecraft.getItemRenderer();
+            minecraft.getItemRenderer();
         this.customRenderer = new ItemRenderer(rendererManager, itemRenderer) {
 
           @Override
           public int getModelCount(ItemStack stack) {
 
             return SignedBytes.saturatedCast(
-                    Math.min(stack.getCount() / 32, 15) + 1);
+                Math.min(stack.getCount() / 32, 15) + 1);
           }
 
           @Override

@@ -21,6 +21,10 @@
 
 package top.theillusivec4.curiousshulkerboxes;
 
+import java.util.Optional;
+import java.util.function.Predicate;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.LivingEntity;
@@ -53,11 +57,6 @@ import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.c
 import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.capability.CurioIronShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Optional;
-import java.util.function.Predicate;
-
 @Mod(CuriousShulkerBoxes.MODID)
 public class CuriousShulkerBoxes {
 
@@ -89,8 +88,7 @@ public class CuriousShulkerBoxes {
 
   private void enqueue(final InterModEnqueueEvent evt) {
 
-    InterModComms.sendTo("curios", CuriosAPI.IMC.REGISTER_TYPE,
-                         () -> new CurioIMCMessage("back"));
+    InterModComms.sendTo("curios", CuriosAPI.IMC.REGISTER_TYPE, () -> new CurioIMCMessage("back"));
   }
 
   @SubscribeEvent
@@ -116,7 +114,7 @@ public class CuriousShulkerBoxes {
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap,
-                                                 @Nullable Direction side) {
+            @Nullable Direction side) {
 
           return CuriosCapability.ITEM.orEmpty(cap, curio);
         }
@@ -126,19 +124,19 @@ public class CuriousShulkerBoxes {
 
   public static boolean isShulkerBox(Block block) {
 
-    boolean isIronShulkerBox = isIronShulkerBoxLoaded &&
-                               IronShulkerBoxIntegration.isIronShulkerBox(
-                                       block);
+    boolean isIronShulkerBox =
+        isIronShulkerBoxLoaded && IronShulkerBoxIntegration.isIronShulkerBox(block);
     return block instanceof ShulkerBoxBlock || isIronShulkerBox;
   }
 
   public static Optional<ImmutableTriple<String, Integer, ItemStack>> getCurioShulkerBox(
-          LivingEntity livingEntity) {
+      LivingEntity livingEntity) {
 
     Predicate<ItemStack> shulkerBox = stack -> {
       Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
       return isShulkerBox(block);
     };
+
     return CuriosAPI.getCurioEquipped(shulkerBox, livingEntity);
   }
 }

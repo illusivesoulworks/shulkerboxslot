@@ -21,6 +21,9 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.network;
 
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -30,43 +33,36 @@ import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
 import top.theillusivec4.curiousshulkerboxes.common.network.client.CPacketOpenShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.server.SPacketSyncAnimation;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 public class NetworkHandler {
 
   private static final String PTC_VERSION = "1";
 
-  public static final SimpleChannel INSTANCE =
-          NetworkRegistry.ChannelBuilder.named(
-                  new ResourceLocation(CuriousShulkerBoxes.MODID, "main"))
-                                        .networkProtocolVersion(
-                                                () -> PTC_VERSION)
-                                        .clientAcceptedVersions(
-                                                PTC_VERSION::equals)
-                                        .serverAcceptedVersions(
-                                                PTC_VERSION::equals)
-                                        .simpleChannel();
+  public static SimpleChannel INSTANCE;
 
   private static int id = 0;
 
   public static void register() {
+    INSTANCE = NetworkRegistry.ChannelBuilder
+        .named(new ResourceLocation(CuriousShulkerBoxes.MODID, "main"))
+        .networkProtocolVersion(() -> PTC_VERSION)
+        .clientAcceptedVersions(PTC_VERSION::equals)
+        .serverAcceptedVersions(PTC_VERSION::equals)
+        .simpleChannel();
 
-    registerMessage(CPacketOpenShulkerBox.class, CPacketOpenShulkerBox::encode,
-                    CPacketOpenShulkerBox::decode,
-                    CPacketOpenShulkerBox::handle);
-    registerMessage(SPacketSyncAnimation.class, SPacketSyncAnimation::encode,
-                    SPacketSyncAnimation::decode, SPacketSyncAnimation::handle);
+    registerMessage(CPacketOpenShulkerBox.class,
+        CPacketOpenShulkerBox::encode,
+        CPacketOpenShulkerBox::decode,
+        CPacketOpenShulkerBox::handle);
+    registerMessage(SPacketSyncAnimation.class,
+        SPacketSyncAnimation::encode,
+        SPacketSyncAnimation::decode,
+        SPacketSyncAnimation::handle);
   }
 
-  private static <MSG> void registerMessage(Class<MSG> messageType,
-                                            BiConsumer<MSG, PacketBuffer> encoder,
-                                            Function<PacketBuffer, MSG> decoder,
-                                            BiConsumer<MSG,
-                                                    Supplier<NetworkEvent.Context>> messageConsumer) {
+  private static <M> void registerMessage(Class<M> messageType, BiConsumer<M, PacketBuffer> encoder,
+      Function<PacketBuffer, M> decoder,
+      BiConsumer<M, Supplier<NetworkEvent.Context>> messageConsumer) {
 
-    INSTANCE.registerMessage(id++, messageType, encoder, decoder,
-                             messageConsumer);
+    INSTANCE.registerMessage(id++, messageType, encoder, decoder, messageConsumer);
   }
 }

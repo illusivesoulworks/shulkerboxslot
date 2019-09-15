@@ -32,8 +32,7 @@ public class CurioCrystalShulkerBoxInventory
 
   private CurioCrystalShulkerBox crystalShulkerBox;
 
-  public CurioCrystalShulkerBoxInventory(ItemStack shulkerBox,
-                                         String identifier, int index) {
+  public CurioCrystalShulkerBoxInventory(ItemStack shulkerBox, String identifier, int index) {
 
     super(ShulkerBoxType.CRYSTAL, shulkerBox, identifier, index);
     CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
@@ -53,17 +52,14 @@ public class CurioCrystalShulkerBoxInventory
   }
 
   /*
-  * Code is derived from CrystalShulkerBoxTileEntity#sortTopStacks
-  * in the com.progwml6.ironshulkerbox.common.tileentity package
-  * in the Iron Shulker Boxes mod
+  * Code is derived from CrystalShulkerBoxTileEntity#sortTopStacks in the
+  * com.progwml6.ironshulkerbox.common.tileentity package in the Iron Shulker Boxes mod.
   * License: GNU GPLv3
   */
-  public static NonNullList<ItemStack> getTopStacks(
-          NonNullList<ItemStack> stacks) {
+  public static NonNullList<ItemStack> getTopStacks(NonNullList<ItemStack> stacks) {
 
     NonNullList<ItemStack> topStacks = NonNullList.withSize(8, ItemStack.EMPTY);
-    NonNullList<ItemStack> copy =
-            NonNullList.withSize(stacks.size(), ItemStack.EMPTY);
+    NonNullList<ItemStack> copy = NonNullList.withSize(stacks.size(), ItemStack.EMPTY);
     int compressedIndex = 0;
 
     mainLoop:

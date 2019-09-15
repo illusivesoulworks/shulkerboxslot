@@ -21,6 +21,7 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.network.server;
 
+import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.Minecraft;
@@ -35,17 +36,14 @@ import top.theillusivec4.curios.api.inventory.CurioStackHandler;
 import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 
-import java.util.function.Supplier;
-
 public class SPacketSyncAnimation {
 
-  private final int     entityId;
-  private final String  identifier;
-  private final int     index;
+  private final int entityId;
+  private final String identifier;
+  private final int index;
   private final boolean isClosing;
 
-  public SPacketSyncAnimation(int entityId, String identifier, int index,
-                              boolean isClosing) {
+  public SPacketSyncAnimation(int entityId, String identifier, int index, boolean isClosing) {
 
     this.entityId = entityId;
     this.identifier = identifier;
@@ -64,11 +62,10 @@ public class SPacketSyncAnimation {
   public static SPacketSyncAnimation decode(PacketBuffer buf) {
 
     return new SPacketSyncAnimation(buf.readInt(), buf.readString(25),
-                                    buf.readInt(), buf.readBoolean());
+        buf.readInt(), buf.readBoolean());
   }
 
-  public static void handle(SPacketSyncAnimation msg,
-                            Supplier<NetworkEvent.Context> ctx) {
+  public static void handle(SPacketSyncAnimation msg, Supplier<NetworkEvent.Context> ctx) {
 
     ctx.get().enqueueWork(() -> {
       Entity entity = Minecraft.getInstance().world.getEntityByID(msg.entityId);
@@ -79,8 +76,7 @@ public class SPacketSyncAnimation {
 
       LivingEntity livingEntity = (LivingEntity) entity;
       CuriosAPI.getCuriosHandler(livingEntity).ifPresent(handler -> {
-        CurioStackHandler stackHandler =
-                handler.getStackHandler(msg.identifier);
+        CurioStackHandler stackHandler = handler.getStackHandler(msg.identifier);
 
         if (stackHandler != null && msg.index < stackHandler.getSlots()) {
           ItemStack stack = stackHandler.getStackInSlot(msg.index);
@@ -92,11 +88,11 @@ public class SPacketSyncAnimation {
               if (curio instanceof CurioShulkerBox) {
 
                 if (msg.isClosing) {
-                  ((CurioShulkerBox) curio).setAnimationStatus(
-                          ShulkerBoxTileEntity.AnimationStatus.CLOSING);
+                  ((CurioShulkerBox) curio)
+                      .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.CLOSING);
                 } else {
-                  ((CurioShulkerBox) curio).setAnimationStatus(
-                          ShulkerBoxTileEntity.AnimationStatus.OPENING);
+                  ((CurioShulkerBox) curio)
+                      .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.OPENING);
                 }
               }
             });
@@ -104,6 +100,7 @@ public class SPacketSyncAnimation {
         }
       });
     });
+
     ctx.get().setPacketHandled(true);
   }
 }

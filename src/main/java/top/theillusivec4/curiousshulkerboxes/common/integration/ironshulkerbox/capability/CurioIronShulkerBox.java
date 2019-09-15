@@ -47,10 +47,9 @@ public class CurioIronShulkerBox extends CurioShulkerBox {
   }
 
   @Override
-  public void doRender(String identifier, LivingEntity livingEntity,
-                       float limbSwing, float limbSwingAmount,
-                       float partialTicks, float ageInTicks, float netHeadYaw,
-                       float headPitch, float scale) {
+  public void doRender(String identifier, LivingEntity livingEntity, float limbSwing,
+      float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+      float headPitch, float scale) {
 
     GlStateManager.enableDepthTest();
     GlStateManager.depthFunc(515);
@@ -64,10 +63,8 @@ public class CurioIronShulkerBox extends CurioShulkerBox {
       textureManager.bindTexture(ShulkerRenderer.field_204402_a);
     } else {
       ResourceLocation rs = new ResourceLocation("ironshulkerbox",
-                                                 "textures/model/" +
-                                                 color.getName() + "/shulker_" +
-                                                 color.getName() +
-                                                 shulkerBoxType.modelTexture);
+          "textures/model/" + color.getName() + "/shulker_" + color.getName()
+              + shulkerBoxType.modelTexture);
       textureManager.bindTexture(rs);
     }
 
@@ -87,10 +84,8 @@ public class CurioIronShulkerBox extends CurioShulkerBox {
 
     ShulkerModel model = (ShulkerModel) this.model;
     model.getBase().render(0.0625F);
-    GlStateManager.translatef(0.0F, -this.getProgress(partialTicks) * 0.5F,
-                              0.0F);
-    GlStateManager.rotatef(270.0F * this.getProgress(partialTicks), 0.0F, 1.0F,
-                           0.0F);
+    GlStateManager.translatef(0.0F, -this.getProgress(partialTicks) * 0.5F, 0.0F);
+    GlStateManager.rotatef(270.0F * this.getProgress(partialTicks), 0.0F, 1.0F, 0.0F);
     model.getLid().render(0.0625F);
     GlStateManager.enableCull();
     GlStateManager.disableRescaleNormal();

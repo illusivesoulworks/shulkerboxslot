@@ -21,6 +21,8 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.inventory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -45,21 +47,17 @@ import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 import top.theillusivec4.curiousshulkerboxes.common.network.server.SPacketSyncAnimation;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 public class CurioShulkerBoxInventory
-        implements IInventory, INamedContainerProvider {
+    implements IInventory, INamedContainerProvider {
 
   protected NonNullList<ItemStack> items;
-  protected ITextComponent         customName;
+  protected ITextComponent customName;
 
   private ItemStack shulkerBox;
-  private String    identifier;
-  private int       index;
+  private String identifier;
+  private int index;
 
-  public CurioShulkerBoxInventory(ItemStack shulkerBox, String identifier,
-                                  int index) {
+  public CurioShulkerBoxInventory(ItemStack shulkerBox, String identifier, int index) {
 
     this.shulkerBox = shulkerBox;
     this.identifier = identifier;
@@ -83,27 +81,23 @@ public class CurioShulkerBoxInventory
   public void openInventory(@Nonnull PlayerEntity player) {
 
     if (!player.isSpectator()) {
-      CompoundNBT nbttagcompound =
-              shulkerBox.getOrCreateChildTag("BlockEntityTag");
+      CompoundNBT nbttagcompound = shulkerBox.getOrCreateChildTag("BlockEntityTag");
       this.loadFromNbt(nbttagcompound);
       CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
 
         if (curio instanceof CurioShulkerBox) {
-          ((CurioShulkerBox) curio).setAnimationStatus(
-                  ShulkerBoxTileEntity.AnimationStatus.OPENING);
+          ((CurioShulkerBox) curio)
+              .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.OPENING);
         }
       });
 
       if (player instanceof ServerPlayerEntity) {
-        NetworkHandler.INSTANCE.send(
-                PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
-                new SPacketSyncAnimation(player.getEntityId(), this.identifier,
-                                         this.index, false));
+        NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
+            new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false));
       }
-      player.world.playSound(null, player.getPosition(),
-                             SoundEvents.BLOCK_SHULKER_BOX_OPEN,
-                             SoundCategory.BLOCKS, 0.5F,
-                             player.world.rand.nextFloat() * 0.1F + 0.9F);
+
+      player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_OPEN,
+          SoundCategory.BLOCKS, 0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
     }
   }
 
@@ -115,21 +109,18 @@ public class CurioShulkerBoxInventory
       CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
 
         if (curio instanceof CurioShulkerBox) {
-          ((CurioShulkerBox) curio).setAnimationStatus(
-                  ShulkerBoxTileEntity.AnimationStatus.CLOSING);
+          ((CurioShulkerBox) curio)
+              .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.CLOSING);
         }
       });
 
       if (player instanceof ServerPlayerEntity) {
-        NetworkHandler.INSTANCE.send(
-                PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
-                new SPacketSyncAnimation(player.getEntityId(), this.identifier,
-                                         this.index, true));
+        NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
+            new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, true));
       }
-      player.world.playSound(null, player.getPosition(),
-                             SoundEvents.BLOCK_SHULKER_BOX_CLOSE,
-                             SoundCategory.BLOCKS, 0.5F,
-                             player.world.rand.nextFloat() * 0.1F + 0.9F);
+
+      player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE,
+          SoundCategory.BLOCKS, 0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
     }
   }
 
@@ -142,8 +133,7 @@ public class CurioShulkerBoxInventory
     }
 
     if (compound.contains("CustomName", 8)) {
-      this.customName = ITextComponent.Serializer.fromJson(
-              compound.getString("CustomName"));
+      this.customName = ITextComponent.Serializer.fromJson(compound.getString("CustomName"));
     }
   }
 
@@ -162,6 +152,7 @@ public class CurioShulkerBoxInventory
         return false;
       }
     }
+
     return true;
   }
 
@@ -204,8 +195,7 @@ public class CurioShulkerBoxInventory
   @Override
   public boolean isItemValidForSlot(int index, @Nonnull ItemStack stack) {
 
-    return !(Block.getBlockFromItem(
-            stack.getItem()) instanceof ShulkerBoxBlock);
+    return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
   }
 
   @Override
@@ -230,7 +220,7 @@ public class CurioShulkerBoxInventory
   @Nullable
   @Override
   public Container createMenu(int i, @Nonnull PlayerInventory playerInventory,
-                              @Nonnull PlayerEntity playerEntity) {
+      @Nonnull PlayerEntity playerEntity) {
 
     return new ShulkerBoxContainer(i, playerInventory, this);
   }

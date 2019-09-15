@@ -31,10 +31,8 @@ import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
 
 public class KeyRegistry {
 
-  public static final String CONFIG_OPEN_DESC =
-          "key.curiousshulkerboxes.open.desc";
-  public static final String CONFIG_CATEGORY  =
-          "key.curiousshulkerboxes.category";
+  public static final String CONFIG_OPEN_DESC = "key.curiousshulkerboxes.open.desc";
+  public static final String CONFIG_CATEGORY  = "key.curiousshulkerboxes.category";
 
   static KeyBinding openShulkerBox;
 
@@ -54,8 +52,7 @@ public class KeyRegistry {
         return false;
       }
     };
-    openShulkerBox =
-            new KeyBinding(CONFIG_OPEN_DESC, GLFW.GLFW_KEY_X, CONFIG_CATEGORY);
+    openShulkerBox = new KeyBinding(CONFIG_OPEN_DESC, GLFW.GLFW_KEY_X, CONFIG_CATEGORY);
     openShulkerBox.setKeyConflictContext(ctx);
     ClientRegistry.registerKeyBinding(openShulkerBox);
   }

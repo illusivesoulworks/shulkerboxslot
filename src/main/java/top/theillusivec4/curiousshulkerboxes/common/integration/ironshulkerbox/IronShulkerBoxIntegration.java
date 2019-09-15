@@ -42,9 +42,8 @@ public class IronShulkerBoxIntegration {
     return block instanceof CrystalShulkerBoxBlock;
   }
 
-  public static INamedContainerProvider createContainer(ItemStack stack,
-                                                        String identifier,
-                                                        int index) {
+  public static INamedContainerProvider createContainer(ItemStack stack, String identifier,
+      int index) {
 
     ShulkerBoxType type = ShulkerBoxBlock.getTypeFromItem(stack.getItem());
     INamedContainerProvider container;
@@ -52,8 +51,7 @@ public class IronShulkerBoxIntegration {
     if (type == ShulkerBoxType.CRYSTAL) {
       container = new CurioCrystalShulkerBoxInventory(stack, identifier, index);
     } else {
-      container =
-              new CurioIronShulkerBoxInventory(type, stack, identifier, index);
+      container = new CurioIronShulkerBoxInventory(type, stack, identifier, index);
     }
 
     return container;
