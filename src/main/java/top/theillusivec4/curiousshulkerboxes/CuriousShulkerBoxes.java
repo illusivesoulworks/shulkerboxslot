@@ -117,6 +117,7 @@ public class CuriousShulkerBoxes {
 
     if (isShulkerBox(block)) {
       CurioShulkerBox curioShulkerBox;
+      stack.getOrCreateChildTag("BlockEntityTag");
 
       if (block instanceof ShulkerBoxBlock) {
         curioShulkerBox = new CurioShulkerBox(stack);

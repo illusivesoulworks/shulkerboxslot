@@ -80,8 +80,13 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
   public void openInventory(@Nonnull PlayerEntity player) {
 
     if (!player.isSpectator()) {
-      CompoundNBT nbttagcompound = shulkerBox.getOrCreateChildTag("BlockEntityTag");
-      this.loadFromNbt(nbttagcompound);
+
+      CompoundNBT nbttagcompound = shulkerBox.getChildTag("BlockEntityTag");
+
+      if (nbttagcompound != null) {
+        this.loadFromNbt(nbttagcompound);
+      }
+
       CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
 
         if (curio instanceof CurioShulkerBox) {
@@ -104,7 +109,12 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
   public void closeInventory(@Nonnull PlayerEntity player) {
 
     if (!player.isSpectator()) {
-      this.saveToNbt(shulkerBox.getOrCreateChildTag("BlockEntityTag"));
+      CompoundNBT nbttagcompound = shulkerBox.getChildTag("BlockEntityTag");
+
+      if (nbttagcompound != null) {
+        this.saveToNbt(nbttagcompound);
+      }
+
       CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
 
         if (curio instanceof CurioShulkerBox) {

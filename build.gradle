@@ -114,6 +114,7 @@ curseforge {
         changelog = file('docs/CHANGELOG.md')
         relations {
             requiredDependency 'curios'
+            optionalDependency 'iron-shulker-boxes'
         }
         addArtifact(sourcesJar)
     }
