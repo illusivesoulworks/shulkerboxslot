@@ -37,10 +37,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameterSets;
+import net.minecraft.world.storage.loot.LootParameters;
+import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.fml.network.PacketDistributor;
 import top.theillusivec4.curios.api.CuriosAPI;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
@@ -50,7 +56,6 @@ import top.theillusivec4.curiousshulkerboxes.common.network.server.SPacketSyncAn
 public class CurioShulkerBoxInventory implements IInventory, INamedContainerProvider {
 
   protected NonNullList<ItemStack> items;
-  protected ITextComponent customName;
 
   private ItemStack shulkerBox;
   private String identifier;
@@ -81,10 +86,17 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
 
     if (!player.isSpectator()) {
 
-      CompoundNBT nbttagcompound = shulkerBox.getChildTag("BlockEntityTag");
+      CompoundNBT tag = shulkerBox.getChildTag("BlockEntityTag");
 
-      if (nbttagcompound != null) {
-        this.loadFromNbt(nbttagcompound);
+      if (tag != null) {
+
+        if (tag.contains("LootTable", 8)) {
+          String lootTable = tag.getString("LootTable");
+          long lootSeed = tag.getLong("LootTableSeed");
+          this.fillWithLoot(new ResourceLocation(lootTable), lootSeed, player);
+        } else {
+          this.loadFromNbt(tag);
+        }
       }
 
       CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
@@ -112,6 +124,8 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
       CompoundNBT nbttagcompound = shulkerBox.getChildTag("BlockEntityTag");
 
       if (nbttagcompound != null) {
+        nbttagcompound.remove("LootTable");
+        nbttagcompound.remove("LootTableSeed");
         this.saveToNbt(nbttagcompound);
       }
 
@@ -139,10 +153,6 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
 
     if (compound.contains("Items", 9)) {
       ItemStackHelper.loadAllItems(compound, this.items);
-    }
-
-    if (compound.contains("CustomName", 8)) {
-      this.customName = ITextComponent.Serializer.fromJson(compound.getString("CustomName"));
     }
   }
 
@@ -223,7 +233,22 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
   @Override
   public ITextComponent getDisplayName() {
 
-    return new TranslationTextComponent("container.shulkerBox");
+    return shulkerBox.getDisplayName();
+  }
+
+  public void fillWithLoot(ResourceLocation lootTable, long lootTableSeed, PlayerEntity player) {
+
+    if (player.world.getServer() != null) {
+      LootTable loottable = player.world.getServer().getLootTableManager()
+          .getLootTableFromLocation(lootTable);
+      LootContext.Builder lootcontext$builder = (new LootContext.Builder(
+          (ServerWorld) player.world))
+          .withParameter(LootParameters.POSITION, new BlockPos(player.getPosition()))
+          .withSeed(lootTableSeed);
+      lootcontext$builder.withLuck(player.getLuck())
+          .withParameter(LootParameters.THIS_ENTITY, player);
+      loottable.fillInventory(this, lootcontext$builder.build(LootParameterSets.CHEST));
+    }
   }
 
   @Nullable
