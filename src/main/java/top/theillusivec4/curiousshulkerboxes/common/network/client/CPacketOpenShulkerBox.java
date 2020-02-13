@@ -23,8 +23,6 @@ package top.theillusivec4.curiousshulkerboxes.common.network.client;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -34,7 +32,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.inventory.CurioShulkerBoxInventory;
 
 public class CPacketOpenShulkerBox {
@@ -44,7 +41,6 @@ public class CPacketOpenShulkerBox {
   }
 
   public static CPacketOpenShulkerBox decode(PacketBuffer buf) {
-
     return new CPacketOpenShulkerBox();
   }
 
@@ -56,32 +52,17 @@ public class CPacketOpenShulkerBox {
       if (sender == null) {
         return;
       }
-
       sender.addStat(Stats.OPEN_SHULKER_BOX);
-
       Optional<ImmutableTriple<String, Integer, ItemStack>> curioShulkerBox = CuriousShulkerBoxes
           .getCurioShulkerBox(sender);
-
       curioShulkerBox.ifPresent(box -> {
         ItemStack stack = box.getRight();
         String identifier = box.getLeft();
         int index = box.getMiddle();
-        Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
-        boolean isIronShulkerBox =
-            CuriousShulkerBoxes.isIronShulkerBoxLoaded && IronShulkerBoxIntegration
-                .isIronShulkerBox(block);
-        INamedContainerProvider container;
-
-        if (isIronShulkerBox) {
-          container = IronShulkerBoxIntegration.createContainer(stack, identifier, index);
-        } else {
-          container = new CurioShulkerBoxInventory(stack, identifier, index);
-        }
-
+        INamedContainerProvider container = new CurioShulkerBoxInventory(stack, identifier, index);
         NetworkHooks.openGui(sender, container);
       });
     });
-
     ctx.get().setPacketHandled(true);
   }
 }

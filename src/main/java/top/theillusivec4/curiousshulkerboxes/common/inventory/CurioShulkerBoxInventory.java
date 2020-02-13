@@ -62,7 +62,6 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
   private int index;
 
   public CurioShulkerBoxInventory(ItemStack shulkerBox, String identifier, int index) {
-
     this.shulkerBox = shulkerBox;
     this.identifier = identifier;
     this.index = index;
@@ -71,13 +70,11 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
 
   @Override
   public int getSizeInventory() {
-
     return this.items.size();
   }
 
   @Override
   public int getInventoryStackLimit() {
-
     return 64;
   }
 
@@ -85,7 +82,6 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
   public void openInventory(@Nonnull PlayerEntity player) {
 
     if (!player.isSpectator()) {
-
       CompoundNBT tag = shulkerBox.getChildTag("BlockEntityTag");
 
       if (tag != null) {
@@ -98,7 +94,6 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
           this.loadFromNbt(tag);
         }
       }
-
       CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
 
         if (curio instanceof CurioShulkerBox) {
@@ -111,7 +106,6 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
         NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
             new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false));
       }
-
       player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_OPEN,
           SoundCategory.BLOCKS, 0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
     }
@@ -128,7 +122,6 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
         nbttagcompound.remove("LootTableSeed");
         this.saveToNbt(nbttagcompound);
       }
-
       CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
 
         if (curio instanceof CurioShulkerBox) {
@@ -141,14 +134,12 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
         NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
             new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, true));
       }
-
       player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE,
           SoundCategory.BLOCKS, 0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
     }
   }
 
   public void loadFromNbt(CompoundNBT compound) {
-
     this.items = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
     if (compound.contains("Items", 9)) {
@@ -157,7 +148,6 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
   }
 
   public CompoundNBT saveToNbt(CompoundNBT compound) {
-
     ItemStackHelper.saveAllItems(compound, this.items, true);
     return compound;
   }
@@ -171,34 +161,29 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
         return false;
       }
     }
-
     return true;
   }
 
   @Nonnull
   @Override
   public ItemStack getStackInSlot(int index) {
-
     return this.items.get(index);
   }
 
   @Nonnull
   @Override
   public ItemStack decrStackSize(int index, int count) {
-
     return ItemStackHelper.getAndSplit(this.items, index, count);
   }
 
   @Nonnull
   @Override
   public ItemStack removeStackFromSlot(int index) {
-
     return ItemStackHelper.getAndRemove(this.items, index);
   }
 
   @Override
   public void setInventorySlotContents(int index, @Nullable ItemStack stack) {
-
     this.items.set(index, stack == null ? ItemStack.EMPTY : stack);
 
     if (stack != null && stack.getCount() > this.getInventoryStackLimit()) {
@@ -213,26 +198,22 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
 
   @Override
   public boolean isItemValidForSlot(int index, @Nonnull ItemStack stack) {
-
     return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
   }
 
   @Override
   public void clear() {
-
     this.items.clear();
   }
 
   @Override
   public boolean isUsableByPlayer(@Nonnull PlayerEntity player) {
-
     return true;
   }
 
   @Nonnull
   @Override
   public ITextComponent getDisplayName() {
-
     return shulkerBox.getDisplayName();
   }
 
@@ -255,7 +236,6 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
   @Override
   public Container createMenu(int i, @Nonnull PlayerInventory playerInventory,
       @Nonnull PlayerEntity playerEntity) {
-
     return new ShulkerBoxContainer(i, playerInventory, this);
   }
 }

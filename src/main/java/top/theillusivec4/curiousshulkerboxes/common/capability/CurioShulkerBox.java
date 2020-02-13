@@ -21,18 +21,23 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.capability;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import javax.annotation.Nonnull;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.ShulkerRenderer;
+import net.minecraft.client.renderer.Atlases;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.model.ShulkerModel;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.model.Material;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ShulkerBoxTileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import top.theillusivec4.curios.api.capability.ICurio;
@@ -51,23 +56,19 @@ public class CurioShulkerBox implements ICurio {
   private float progressOld;
 
   public CurioShulkerBox(ItemStack stack) {
-
     this.stack = stack;
   }
 
   public void setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus status) {
-
     this.animationStatus = status;
   }
 
   public float getProgress(float partialTicks) {
-
     return this.progressOld + (this.progress - this.progressOld) * partialTicks;
   }
 
   @Override
-  public void onCurioTick(String identifier, LivingEntity livingEntity) {
-
+  public void onCurioTick(String identifier, int index, LivingEntity livingEntity) {
     this.progressOld = this.progress;
 
     switch (this.animationStatus) {
@@ -95,7 +96,6 @@ public class CurioShulkerBox implements ICurio {
 
   @Override
   public void playEquipSound(LivingEntity livingEntity) {
-
     livingEntity.world
         .playSound(null, livingEntity.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE,
             SoundCategory.NEUTRAL, 1.0F, 1.0F);
@@ -103,20 +103,17 @@ public class CurioShulkerBox implements ICurio {
 
   @Override
   public boolean canRightClickEquip() {
-
     return true;
   }
 
   @Override
   public boolean shouldSyncToTracking(String identifier, LivingEntity livingEntity) {
-
     return true;
   }
 
   @Nonnull
   @Override
   public CompoundNBT getSyncTag() {
-
     CompoundNBT compound = new CompoundNBT();
     int state = 0;
 
@@ -138,7 +135,6 @@ public class CurioShulkerBox implements ICurio {
 
   @Override
   public void readSyncTag(CompoundNBT compound) {
-
     int state = compound.getInt(ANIMATION_TAG);
 
     switch (state) {
@@ -160,51 +156,40 @@ public class CurioShulkerBox implements ICurio {
 
   @Override
   public boolean hasRender(String identifier, LivingEntity livingEntity) {
-
     return true;
   }
 
   @Override
-  public void doRender(String identifier, LivingEntity livingEntity, float limbSwing,
-      float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
-      float headPitch, float scale) {
-
-    GlStateManager.enableDepthTest();
-    GlStateManager.depthFunc(515);
-    GlStateManager.depthMask(true);
-    GlStateManager.disableCull();
-    TextureManager textureManager = Minecraft.getInstance().getTextureManager();
-    ICurio.RenderHelper.rotateIfSneaking(livingEntity);
+  public void render(String identifier, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer,
+      int light, LivingEntity livingEntity, float limbSwing, float limbSwingAmount,
+      float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    Direction direction = Direction.SOUTH;
     DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
+    Material material;
 
     if (color == null) {
-      textureManager.bindTexture(ShulkerRenderer.field_204402_a);
+      material = Atlases.DEFAULT_SHULKER_TEXTURE;
     } else {
-      textureManager.bindTexture(ShulkerRenderer.SHULKER_ENDERGOLEM_TEXTURE[color.getId()]);
+      material = Atlases.SHULKER_TEXTURES.get(color.getId());
     }
-
-    GlStateManager.pushMatrix();
-    GlStateManager.enableRescaleNormal();
-    GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-    GlStateManager.scalef(1.0F, -1.0F, -1.0F);
-    GlStateManager.translatef(0.0F, 1.0F, 0.0F);
-    float newScale = 0.45F;
-    GlStateManager.scalef(newScale, newScale, newScale);
-    GlStateManager.translatef(0.0F, -2.8F, -1.76F);
-    GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 1.0f);
+    matrixStack.push();
+    matrixStack.translate(0.5D, 0.5D, 0.5D);
+    float f = 0.45F;
+    matrixStack.scale(f, f, f);
+    matrixStack.rotate(direction.getRotation());
+    matrixStack.scale(1.0F, -1.0F, -1.0F);
+    matrixStack.translate(-1.1125D, -0.675D, -0.5D);
+    IVertexBuilder ivertexbuilder = material
+        .getBuffer(renderTypeBuffer, RenderType::entityCutoutNoCull);
 
     if (!(this.model instanceof ShulkerModel)) {
       this.model = new ShulkerModel<>();
     }
-
-    ShulkerModel model = (ShulkerModel) this.model;
-    model.getBase().render(0.0625F);
-    GlStateManager.translatef(0.0F, -this.getProgress(partialTicks) * 0.5F, 0.0F);
-    GlStateManager.rotatef(270.0F * this.getProgress(partialTicks), 0.0F, 1.0F, 0.0F);
-    model.getLid().render(0.0625F);
-    GlStateManager.enableCull();
-    GlStateManager.disableRescaleNormal();
-    GlStateManager.popMatrix();
-    GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+    ShulkerModel<?> model = (ShulkerModel<?>) this.model;
+    model.getBase().render(matrixStack, ivertexbuilder, light, OverlayTexture.DEFAULT_LIGHT);
+    matrixStack.translate(0.0D, (-this.getProgress(partialTicks) * 0.5F), 0.0D);
+    matrixStack.rotate(Vector3f.YP.rotationDegrees(270.0F * this.getProgress(partialTicks)));
+    model.getLid().render(matrixStack, ivertexbuilder, light, OverlayTexture.DEFAULT_LIGHT);
+    matrixStack.pop();
   }
 }

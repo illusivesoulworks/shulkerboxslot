@@ -35,7 +35,6 @@ public class EventHandlerClient {
     if (evt.phase != TickEvent.Phase.END) {
       return;
     }
-
     final boolean isKeyDown = KeyRegistry.openShulkerBox.isKeyDown();
     final boolean isGameFocused = Minecraft.getInstance().isGameFocused();
 

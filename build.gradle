@@ -8,12 +8,10 @@ buildscript {
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
-        classpath "com.wynprice.cursemaven:CurseMaven:2.1.1"
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.matthewprenger.cursegradle'
-apply plugin: "com.wynprice.cursemaven"
 
 version = "${version_minecraft}-${mod_version}"
 group = "${mod_group}"
@@ -62,7 +60,6 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
     compile fg.deobf("top.theillusivec4.curios:curios:${version_curios}")
-    compile fg.deobf("curse.maven:iron-shulker-boxes:2783918")
 }
 
 sourceSets {
@@ -114,7 +111,6 @@ curseforge {
         changelog = file('docs/CHANGELOG.md')
         relations {
             requiredDependency 'curios'
-            optionalDependency 'iron-shulker-boxes'
         }
         addArtifact(sourcesJar)
     }

@@ -37,18 +37,15 @@ public class KeyRegistry {
   static KeyBinding openShulkerBox;
 
   public static void register() {
-
     IKeyConflictContext ctx = new IKeyConflictContext() {
       @Override
       public boolean isActive() {
-
         ClientPlayerEntity player = Minecraft.getInstance().player;
         return CuriousShulkerBoxes.getCurioShulkerBox(player).isPresent();
       }
 
       @Override
       public boolean conflicts(IKeyConflictContext other) {
-
         return false;
       }
     };

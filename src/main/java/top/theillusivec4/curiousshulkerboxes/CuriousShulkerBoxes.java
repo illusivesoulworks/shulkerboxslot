@@ -38,7 +38,6 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -52,9 +51,6 @@ import top.theillusivec4.curios.api.imc.CurioIMCMessage;
 import top.theillusivec4.curiousshulkerboxes.client.EventHandlerClient;
 import top.theillusivec4.curiousshulkerboxes.client.KeyRegistry;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.capability.CurioCrystalShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.capability.CurioIronShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 
 @Mod(CuriousShulkerBoxes.MODID)
@@ -62,23 +58,15 @@ public class CuriousShulkerBoxes {
 
   public static final String MODID = "curiousshulkerboxes";
 
-  public static boolean isIronShulkerBoxLoaded = false;
-
   public CuriousShulkerBoxes() {
-
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::enqueue);
-
-    isIronShulkerBoxLoaded = ModList.get().isLoaded("ironshulkerbox");
   }
 
   public static boolean isShulkerBox(Block block) {
-
-    boolean isIronShulkerBox =
-        isIronShulkerBoxLoaded && IronShulkerBoxIntegration.isIronShulkerBox(block);
-    return block instanceof ShulkerBoxBlock || isIronShulkerBox;
+    return block instanceof ShulkerBoxBlock;
   }
 
   public static Optional<ImmutableTriple<String, Integer, ItemStack>> getCurioShulkerBox(
@@ -88,45 +76,31 @@ public class CuriousShulkerBoxes {
       Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
       return isShulkerBox(block);
     };
-
     return CuriosAPI.getCurioEquipped(shulkerBox, livingEntity);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
-
     MinecraftForge.EVENT_BUS.register(this);
     NetworkHandler.register();
   }
 
   private void clientSetup(final FMLClientSetupEvent evt) {
-
     KeyRegistry.register();
     MinecraftForge.EVENT_BUS.register(new EventHandlerClient());
   }
 
   private void enqueue(final InterModEnqueueEvent evt) {
-
     InterModComms.sendTo("curios", CuriosAPI.IMC.REGISTER_TYPE, () -> new CurioIMCMessage("back"));
   }
 
   @SubscribeEvent
   public void attachCapabilities(AttachCapabilitiesEvent<ItemStack> evt) {
-
     ItemStack stack = evt.getObject();
     Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
 
     if (isShulkerBox(block)) {
-      CurioShulkerBox curioShulkerBox;
+      CurioShulkerBox curioShulkerBox = new CurioShulkerBox(stack);
       stack.getOrCreateChildTag("BlockEntityTag");
-
-      if (block instanceof ShulkerBoxBlock) {
-        curioShulkerBox = new CurioShulkerBox(stack);
-      } else if (IronShulkerBoxIntegration.isCrystalShulkerBox(block)) {
-        curioShulkerBox = new CurioCrystalShulkerBox(stack);
-      } else {
-        curioShulkerBox = new CurioIronShulkerBox(stack);
-      }
-
       evt.addCapability(CuriosCapability.ID_ITEM, new ICapabilityProvider() {
         LazyOptional<ICurio> curio = LazyOptional.of(() -> curioShulkerBox);
 
@@ -134,7 +108,6 @@ public class CuriousShulkerBoxes {
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap,
             @Nullable Direction side) {
-
           return CuriosCapability.ITEM.orEmpty(cap, curio);
         }
       });
