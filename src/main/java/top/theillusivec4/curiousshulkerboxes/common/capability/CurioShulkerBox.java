@@ -170,6 +170,8 @@ public class CurioShulkerBox implements ICurio {
     } else {
       material = Atlases.SHULKER_TEXTURES.get(color.getId());
     }
+    ICurio.RenderHelper.translateIfSneaking(matrixStack, livingEntity);
+    ICurio.RenderHelper.rotateIfSneaking(matrixStack, livingEntity);
     matrixStack.push();
     matrixStack.translate(0.5D, 0.5D, 0.5D);
     float f = 0.45F;
