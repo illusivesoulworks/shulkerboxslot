@@ -43,10 +43,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
-import top.theillusivec4.curios.api.CuriosAPI;
-import top.theillusivec4.curios.api.capability.CuriosCapability;
-import top.theillusivec4.curios.api.capability.ICurio;
-import top.theillusivec4.curios.api.imc.CurioIMCMessage;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.CuriosCapability;
+import top.theillusivec4.curios.api.SlotTypeMessage;
+import top.theillusivec4.curios.api.SlotTypePreset;
+import top.theillusivec4.curios.api.type.capability.ICurio;
 import top.theillusivec4.curiousshulkerboxes.client.EventHandlerClient;
 import top.theillusivec4.curiousshulkerboxes.client.KeyRegistry;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
@@ -83,7 +84,7 @@ public class CuriousShulkerBoxes {
       Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
       return isShulkerBox(block);
     };
-    return CuriosAPI.getCurioEquipped(shulkerBox, livingEntity);
+    return CuriosApi.getCuriosHelper().findEquippedCurio(shulkerBox, livingEntity);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
@@ -97,7 +98,8 @@ public class CuriousShulkerBoxes {
   }
 
   private void enqueue(final InterModEnqueueEvent evt) {
-    InterModComms.sendTo("curios", CuriosAPI.IMC.REGISTER_TYPE, () -> new CurioIMCMessage("back"));
+    InterModComms.sendTo(CuriosApi.MODID, SlotTypeMessage.REGISTER_TYPE,
+        () -> SlotTypePreset.BACK.getMessageBuilder().build());
   }
 
   @SubscribeEvent

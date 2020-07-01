@@ -26,9 +26,8 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.renderer.Atlases;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.model.ShulkerModel;
-import net.minecraft.client.renderer.model.Material;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.DyeColor;
@@ -38,7 +37,9 @@ import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import top.theillusivec4.curios.api.capability.ICurio;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3f;
+import top.theillusivec4.curios.api.type.capability.ICurio;
 
 public class CurioShulkerBox implements ICurio {
 
@@ -66,7 +67,7 @@ public class CurioShulkerBox implements ICurio {
   }
 
   @Override
-  public void onCurioTick(String identifier, int index, LivingEntity livingEntity) {
+  public void curioTick(String identifier, int index, LivingEntity livingEntity) {
     this.progressOld = this.progress;
 
     switch (this.animationStatus) {
@@ -93,10 +94,9 @@ public class CurioShulkerBox implements ICurio {
   }
 
   @Override
-  public void playEquipSound(LivingEntity livingEntity) {
-    livingEntity.world
-        .playSound(null, livingEntity.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE,
-            SoundCategory.NEUTRAL, 1.0F, 1.0F);
+  public void playRightClickEquipSound(LivingEntity livingEntity) {
+    livingEntity.world.playSound(null, new BlockPos(livingEntity.getPositionVec()),
+        SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
   }
 
   @Override
@@ -105,13 +105,13 @@ public class CurioShulkerBox implements ICurio {
   }
 
   @Override
-  public boolean shouldSyncToTracking(String identifier, LivingEntity livingEntity) {
+  public boolean canSync(String identifier, int index, LivingEntity livingEntity) {
     return true;
   }
 
   @Nonnull
   @Override
-  public CompoundNBT getSyncTag() {
+  public CompoundNBT writeSyncData() {
     CompoundNBT compound = new CompoundNBT();
     int state = 0;
 
@@ -132,7 +132,7 @@ public class CurioShulkerBox implements ICurio {
   }
 
   @Override
-  public void readSyncTag(CompoundNBT compound) {
+  public void readSyncData(CompoundNBT compound) {
     int state = compound.getInt(ANIMATION_TAG);
 
     switch (state) {
@@ -153,17 +153,18 @@ public class CurioShulkerBox implements ICurio {
   }
 
   @Override
-  public boolean hasRender(String identifier, LivingEntity livingEntity) {
+  public boolean canRender(String identifier, int index, LivingEntity livingEntity) {
     return true;
   }
 
   @Override
-  public void render(String identifier, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer,
-      int light, LivingEntity livingEntity, float limbSwing, float limbSwingAmount,
-      float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+  public void render(String identifier, int index, MatrixStack matrixStack,
+      IRenderTypeBuffer renderTypeBuffer, int light, LivingEntity livingEntity, float limbSwing,
+      float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+      float headPitch) {
     Direction direction = Direction.SOUTH;
     DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
-    Material material;
+    RenderMaterial material;
 
     if (color == null) {
       material = Atlases.DEFAULT_SHULKER_TEXTURE;
@@ -180,16 +181,16 @@ public class CurioShulkerBox implements ICurio {
     matrixStack.scale(1.0F, -1.0F, -1.0F);
     matrixStack.translate(-1.1125D, -0.675D, -0.5D);
     IVertexBuilder ivertexbuilder = material
-        .getBuffer(renderTypeBuffer, RenderType::entityCutoutNoCull);
+        .getBuffer(renderTypeBuffer, RenderType::getEntityCutoutNoCull);
 
     if (!(this.model instanceof ShulkerModel)) {
       this.model = new ShulkerModel<>();
     }
     ShulkerModel<?> model = (ShulkerModel<?>) this.model;
-    model.getBase().render(matrixStack, ivertexbuilder, light, OverlayTexture.DEFAULT_LIGHT);
+    model.getBase().render(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY);
     matrixStack.translate(0.0D, (-this.getProgress(partialTicks) * 0.5F), 0.0D);
     matrixStack.rotate(Vector3f.YP.rotationDegrees(270.0F * this.getProgress(partialTicks)));
-    model.getLid().render(matrixStack, ivertexbuilder, light, OverlayTexture.DEFAULT_LIGHT);
+    model.getLid().render(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY);
     matrixStack.pop();
   }
 }

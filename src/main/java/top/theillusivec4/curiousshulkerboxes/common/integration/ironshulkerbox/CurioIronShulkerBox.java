@@ -27,15 +27,15 @@ import com.progwml6.ironshulkerbox.common.block.IronShulkerBoxesTypes;
 import net.minecraft.client.renderer.Atlases;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.model.ShulkerModel;
-import net.minecraft.client.renderer.model.Material;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
-import top.theillusivec4.curios.api.capability.ICurio;
+import net.minecraft.util.math.vector.Vector3f;
+import top.theillusivec4.curios.api.type.capability.ICurio;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 
 public class CurioIronShulkerBox extends CurioShulkerBox {
@@ -48,9 +48,10 @@ public class CurioIronShulkerBox extends CurioShulkerBox {
   }
 
   @Override
-  public void render(String identifier, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer,
-      int light, LivingEntity livingEntity, float limbSwing, float limbSwingAmount,
-      float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+  public void render(String identifier, int index, MatrixStack matrixStack,
+      IRenderTypeBuffer renderTypeBuffer, int light, LivingEntity livingEntity, float limbSwing,
+      float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+      float headPitch) {
     Direction direction = Direction.SOUTH;
     ICurio.RenderHelper.translateIfSneaking(matrixStack, livingEntity);
     ICurio.RenderHelper.rotateIfSneaking(matrixStack, livingEntity);
@@ -59,7 +60,7 @@ public class CurioIronShulkerBox extends CurioShulkerBox {
     if (color == null) {
       color = DyeColor.WHITE;
     }
-    Material material = new Material(Atlases.SHULKER_BOX_ATLAS,
+    RenderMaterial material = new RenderMaterial(Atlases.SHULKER_BOX_ATLAS,
         IronShulkerBoxesModels.chooseShulkerBoxModel(this.shulkerBoxType, color.getId()));
 
     if (!(this.model instanceof ShulkerModel)) {
@@ -74,11 +75,11 @@ public class CurioIronShulkerBox extends CurioShulkerBox {
     matrixStack.scale(1.0F, -1.0F, -1.0F);
     matrixStack.translate(-1.1125D, -0.675D, -0.5D);
     IVertexBuilder ivertexbuilder = material
-        .getBuffer(renderTypeBuffer, RenderType::entityCutoutNoCull);
-    model.getBase().render(matrixStack, ivertexbuilder, light, OverlayTexture.DEFAULT_LIGHT);
+        .getBuffer(renderTypeBuffer, RenderType::getEntityCutoutNoCull);
+    model.getBase().render(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY);
     matrixStack.translate(0.0D, -this.getProgress(partialTicks) * 0.5F, 0.0D);
     matrixStack.rotate(Vector3f.YP.rotationDegrees(270.0F * this.getProgress(partialTicks)));
-    model.getLid().render(matrixStack, ivertexbuilder, light, OverlayTexture.DEFAULT_LIGHT);
+    model.getLid().render(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY);
     matrixStack.pop();
   }
 }

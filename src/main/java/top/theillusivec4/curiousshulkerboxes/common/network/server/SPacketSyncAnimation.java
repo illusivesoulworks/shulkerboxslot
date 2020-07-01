@@ -23,14 +23,14 @@ import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
-import top.theillusivec4.curios.api.CuriosAPI;
-import top.theillusivec4.curios.api.inventory.CurioStackHandler;
+import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 
@@ -66,37 +66,42 @@ public class SPacketSyncAnimation {
   public static void handle(SPacketSyncAnimation msg, Supplier<NetworkEvent.Context> ctx) {
 
     ctx.get().enqueueWork(() -> {
-      Entity entity = Minecraft.getInstance().world.getEntityByID(msg.entityId);
+      ClientWorld world = Minecraft.getInstance().world;
+
+      if (world == null) {
+        return;
+      }
+      Entity entity = world.getEntityByID(msg.entityId);
 
       if (!(entity instanceof LivingEntity)) {
         return;
       }
 
       LivingEntity livingEntity = (LivingEntity) entity;
-      CuriosAPI.getCuriosHandler(livingEntity).ifPresent(handler -> {
-        CurioStackHandler stackHandler = handler.getStackHandler(msg.identifier);
+      CuriosApi.getCuriosHelper().getCuriosHandler(livingEntity).ifPresent(
+          handler -> handler.getStacksHandler(msg.identifier).ifPresent(stacksHandler -> {
 
-        if (stackHandler != null && msg.index < stackHandler.getSlots()) {
-          ItemStack stack = stackHandler.getStackInSlot(msg.index);
-          Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
+            if (msg.index < stacksHandler.getSlots()) {
+              ItemStack stack = stacksHandler.getStacks().getStackInSlot(msg.index);
+              Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
 
-          if (CuriousShulkerBoxes.isShulkerBox(block)) {
-            CuriosAPI.getCurio(stack).ifPresent(curio -> {
+              if (CuriousShulkerBoxes.isShulkerBox(block)) {
+                CuriosApi.getCuriosHelper().getCurio(stack).ifPresent(curio -> {
 
-              if (curio instanceof CurioShulkerBox) {
+                  if (curio instanceof CurioShulkerBox) {
 
-                if (msg.isClosing) {
-                  ((CurioShulkerBox) curio)
-                      .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.CLOSING);
-                } else {
-                  ((CurioShulkerBox) curio)
-                      .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.OPENING);
-                }
+                    if (msg.isClosing) {
+                      ((CurioShulkerBox) curio)
+                          .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.CLOSING);
+                    } else {
+                      ((CurioShulkerBox) curio)
+                          .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.OPENING);
+                    }
+                  }
+                });
               }
-            });
-          }
-        }
-      });
+            }
+          }));
     });
 
     ctx.get().setPacketHandled(true);

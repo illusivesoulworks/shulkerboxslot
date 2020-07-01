@@ -62,7 +62,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
     compile fg.deobf("top.theillusivec4.curios:curios:${version_curios}")
-    compile fg.deobf("curse.maven:iron-shulker-boxes:2963421")
+    compile fg.deobf("curse.maven:iron-shulker-boxes:${file_ironshulkerboxes}")
 }
 
 sourceSets {

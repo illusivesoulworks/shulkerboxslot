@@ -32,6 +32,10 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.ShulkerBoxContainer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameterSets;
+import net.minecraft.loot.LootParameters;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraft.util.NonNullList;
@@ -41,12 +45,8 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootParameterSets;
-import net.minecraft.world.storage.loot.LootParameters;
-import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.fml.network.PacketDistributor;
-import top.theillusivec4.curios.api.CuriosAPI;
+import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 import top.theillusivec4.curiousshulkerboxes.common.network.server.SPacketSyncAnimation;
@@ -92,7 +92,7 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
           this.loadFromNbt(tag);
         }
       }
-      CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
+      CuriosApi.getCuriosHelper().getCurio(shulkerBox).ifPresent(curio -> {
 
         if (curio instanceof CurioShulkerBox) {
           ((CurioShulkerBox) curio)
@@ -104,8 +104,9 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
         NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
             new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false));
       }
-      player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_OPEN,
-          SoundCategory.BLOCKS, 0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
+      player.world.playSound(null, new BlockPos(player.getPositionVec()),
+          SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F,
+          player.world.rand.nextFloat() * 0.1F + 0.9F);
     }
   }
 
@@ -120,7 +121,7 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
         nbttagcompound.remove("LootTableSeed");
         this.saveToNbt(nbttagcompound);
       }
-      CuriosAPI.getCurio(shulkerBox).ifPresent(curio -> {
+      CuriosApi.getCuriosHelper().getCurio(shulkerBox).ifPresent(curio -> {
 
         if (curio instanceof CurioShulkerBox) {
           ((CurioShulkerBox) curio)
@@ -132,8 +133,9 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
         NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
             new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, true));
       }
-      player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE,
-          SoundCategory.BLOCKS, 0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
+      player.world.playSound(null, new BlockPos(player.getPositionVec()),
+          SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS, 0.5F,
+          player.world.rand.nextFloat() * 0.1F + 0.9F);
     }
   }
 
@@ -145,9 +147,8 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
     }
   }
 
-  public CompoundNBT saveToNbt(CompoundNBT compound) {
+  public void saveToNbt(CompoundNBT compound) {
     ItemStackHelper.saveAllItems(compound, this.items, true);
-    return compound;
   }
 
   @Override
@@ -222,7 +223,7 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
           .getLootTableFromLocation(lootTable);
       LootContext.Builder lootcontext$builder = (new LootContext.Builder(
           (ServerWorld) player.world))
-          .withParameter(LootParameters.POSITION, new BlockPos(player.getPosition()))
+          .withParameter(LootParameters.POSITION, new BlockPos(player.getPositionVec()))
           .withSeed(lootTableSeed);
       lootcontext$builder.withLuck(player.getLuck())
           .withParameter(LootParameters.THIS_ENTITY, player);
