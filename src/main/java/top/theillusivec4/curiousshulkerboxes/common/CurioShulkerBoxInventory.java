@@ -1,9 +1,11 @@
 package top.theillusivec4.curiousshulkerboxes.common;
 
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -14,6 +16,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
@@ -24,7 +27,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curiousshulkerboxes.common.network.NetworkPackets;
 
 public class CurioShulkerBoxInventory implements Inventory, NamedScreenHandlerFactory {
 
@@ -57,12 +60,16 @@ public class CurioShulkerBoxInventory implements Inventory, NamedScreenHandlerFa
           this.readFromTag(tag);
         }
       }
-      CuriosApi.getCuriosHelper().getCurio(stack).ifPresent(curio -> {
 
-        if (curio instanceof CurioShulkerBox) {
-          ((CurioShulkerBox) curio).setAnimationStage(AnimationStage.OPENING);
-        }
-      });
+      if (!player.world.isClient()) {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeInt(player.getEntityId());
+        buf.writeString(id);
+        buf.writeInt(index);
+        ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, NetworkPackets.OPENING_BOX, buf);
+        PlayerStream.watching(player).forEach(player1 -> ServerSidePacketRegistry.INSTANCE
+            .sendToPlayer(player1, NetworkPackets.OPENING_BOX, buf));
+      }
       player.world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_SHULKER_BOX_OPEN,
           SoundCategory.BLOCKS, 0.5F, player.world.random.nextFloat() * 0.1F + 0.9F);
     }
@@ -106,12 +113,16 @@ public class CurioShulkerBoxInventory implements Inventory, NamedScreenHandlerFa
         tag.remove("LootTableSeed");
         this.writeToTag(tag);
       }
-      CuriosApi.getCuriosHelper().getCurio(stack).ifPresent(curio -> {
 
-        if (curio instanceof CurioShulkerBox) {
-          ((CurioShulkerBox) curio).setAnimationStage(AnimationStage.CLOSING);
-        }
-      });
+      if (!player.world.isClient()) {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeInt(player.getEntityId());
+        buf.writeString(id);
+        buf.writeInt(index);
+        ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, NetworkPackets.CLOSING_BOX, buf);
+        PlayerStream.watching(player).forEach(player1 -> ServerSidePacketRegistry.INSTANCE
+            .sendToPlayer(player1, NetworkPackets.CLOSING_BOX, buf));
+      }
       player.world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_SHULKER_BOX_CLOSE,
           SoundCategory.BLOCKS, 0.5F, player.world.random.nextFloat() * 0.1F + 0.9F);
     }

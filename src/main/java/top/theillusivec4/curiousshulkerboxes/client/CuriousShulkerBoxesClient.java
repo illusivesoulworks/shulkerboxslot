@@ -26,7 +26,7 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.CuriosComponent;
 import top.theillusivec4.curios.api.type.component.IRenderableCurio;
 import top.theillusivec4.curiousshulkerboxes.common.CurioShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.NetworkHandler;
+import top.theillusivec4.curiousshulkerboxes.common.network.NetworkPackets;
 
 public class CuriousShulkerBoxesClient implements ClientModInitializer {
 
@@ -95,8 +95,9 @@ public class CuriousShulkerBoxesClient implements ClientModInitializer {
 
       if (clientPlayerEntity != null && KeyRegistry.openShulkerBox.wasPressed()) {
         ClientSidePacketRegistry.INSTANCE
-            .sendToServer(NetworkHandler.OPEN_SHULKER_BOX, new PacketByteBuf(Unpooled.buffer()));
+            .sendToServer(NetworkPackets.OPEN_SHULKER_BOX, new PacketByteBuf(Unpooled.buffer()));
       }
     });
+    ClientNetworkHandler.register();
   }
 }

@@ -1,4 +1,4 @@
-package top.theillusivec4.curiousshulkerboxes.common;
+package top.theillusivec4.curiousshulkerboxes.common.network;
 
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.Block;
@@ -6,17 +6,13 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.Identifier;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curiousshulkerboxes.common.CurioShulkerBoxInventory;
 
 public class NetworkHandler {
 
-  public static final String MODID = "curiousshulkerboxes";
-
-  public static final Identifier OPEN_SHULKER_BOX = new Identifier(MODID, "open_shulker_box");
-
   public static void register() {
-    ServerSidePacketRegistry.INSTANCE.register(OPEN_SHULKER_BOX,
+    ServerSidePacketRegistry.INSTANCE.register(NetworkPackets.OPEN_SHULKER_BOX,
         (((packetContext, packetByteBuf) -> packetContext.getTaskQueue().execute(() -> {
           PlayerEntity playerEntity = packetContext.getPlayer();
 

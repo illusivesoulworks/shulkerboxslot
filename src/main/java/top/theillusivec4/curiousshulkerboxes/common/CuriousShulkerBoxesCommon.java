@@ -10,9 +10,11 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.CuriosComponent;
 import top.theillusivec4.curios.api.SlotTypeInfo.BuildScheme;
 import top.theillusivec4.curios.api.SlotTypePreset;
+import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 
 public class CuriousShulkerBoxesCommon implements ModInitializer {
 
+  public static final String MODID = "curiousshulkerboxes";
   public static final Logger LOGGER = LogManager.getLogger();
 
   @Override
