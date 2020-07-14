@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "curiousshulkerboxes",
+  "version": "${version}",
+  "name": "Curious Shulker Boxes",
+  "description": "Adds curio support for Shulker Boxes for easier access and management.",
+  "authors": ["C4"],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/curious-shulker-boxes-fabric",
+    "sources": "https://github.com/TheIllusiveC4/CuriousShulkerBoxes",
+    "issues": "https://github.com/TheIllusiveC4/CuriousShulkerBoxes/issues"
+  },
+  "license": "LGPLv3.0",
+  "icon": "assets/curiousshulkerboxes/curiousshulkerboxes_icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "top.theillusivec4.curiousshulkerboxes.common.CuriousShulkerBoxesCommon"
+    ],
+    "client": [
+      "top.theillusivec4.curiousshulkerboxes.client.CuriousShulkerBoxesClient"
+    ]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "minecraft": "1.16.x",
+    "curios": ">=1.16.1-0.1"
+  }
+}
