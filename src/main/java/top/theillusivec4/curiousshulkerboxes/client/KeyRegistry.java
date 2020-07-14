@@ -32,7 +32,7 @@ public class KeyRegistry {
 
   public static void registerKeys() {
     openShulkerBox = registerKeybinding(
-        new KeyBinding(CONFIG_OPEN_DESC, GLFW.GLFW_KEY_X, CONFIG_CATEGORY));
+        new KeyBinding(CONFIG_OPEN_DESC, GLFW.GLFW_KEY_B, CONFIG_CATEGORY));
   }
 
   private static KeyBinding registerKeybinding(KeyBinding key) {
