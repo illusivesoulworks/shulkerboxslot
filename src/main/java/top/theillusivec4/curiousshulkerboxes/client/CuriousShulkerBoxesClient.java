@@ -22,7 +22,7 @@ package top.theillusivec4.curiousshulkerboxes.client;
 import io.netty.buffer.Unpooled;
 import nerdhub.cardinal.components.api.event.ItemComponentCallbackV2;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -109,14 +109,14 @@ public class CuriousShulkerBoxesClient implements ClientModInitializer {
           })));
     }
     KeyRegistry.registerKeys();
-    ClientTickCallback.EVENT.register((client) -> {
-      ClientPlayerEntity clientPlayerEntity = client.player;
+    ClientTickEvents.END_CLIENT_TICK.register((minecraftClient -> {
+      ClientPlayerEntity clientPlayerEntity = minecraftClient.player;
 
       if (clientPlayerEntity != null && KeyRegistry.openShulkerBox.wasPressed()) {
         ClientSidePacketRegistry.INSTANCE
             .sendToServer(NetworkPackets.OPEN_SHULKER_BOX, new PacketByteBuf(Unpooled.buffer()));
       }
-    });
+    }));
     ClientNetworkHandler.register();
   }
 }

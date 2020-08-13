@@ -46,6 +46,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Vec3d;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkPackets;
 
 public class CurioShulkerBoxInventory implements Inventory, NamedScreenHandlerFactory {
@@ -103,7 +104,8 @@ public class CurioShulkerBoxInventory implements Inventory, NamedScreenHandlerFa
         Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test((ServerPlayerEntity) player, lootTableId);
       }
       LootContext.Builder builder = (new LootContext.Builder((ServerWorld) player.world))
-          .parameter(LootContextParameters.POSITION, player.getBlockPos()).random(lootSeed);
+          .parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(player.getBlockPos()))
+          .random(lootSeed);
       builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
       lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
     }
