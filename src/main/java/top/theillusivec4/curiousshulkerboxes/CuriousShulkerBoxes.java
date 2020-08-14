@@ -36,7 +36,6 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -51,8 +50,6 @@ import top.theillusivec4.curios.api.type.capability.ICurio;
 import top.theillusivec4.curiousshulkerboxes.client.EventHandlerClient;
 import top.theillusivec4.curiousshulkerboxes.client.KeyRegistry;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.CurioIronShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 
 @Mod(CuriousShulkerBoxes.MODID)
@@ -60,21 +57,15 @@ public class CuriousShulkerBoxes {
 
   public static final String MODID = "curiousshulkerboxes";
 
-  public static boolean isIronShulkerBoxesLoaded = false;
-
   public CuriousShulkerBoxes() {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::enqueue);
-
-    isIronShulkerBoxesLoaded = ModList.get().isLoaded("ironshulkerbox");
   }
 
   public static boolean isShulkerBox(Block block) {
-    boolean isIronShulkerBox =
-        isIronShulkerBoxesLoaded && IronShulkerBoxIntegration.isIronShulkerBox(block);
-    return block instanceof ShulkerBoxBlock || isIronShulkerBox;
+    return block instanceof ShulkerBoxBlock;
   }
 
   public static Optional<ImmutableTriple<String, Integer, ItemStack>> getCurioShulkerBox(
@@ -108,14 +99,8 @@ public class CuriousShulkerBoxes {
     Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
 
     if (isShulkerBox(block)) {
-      CurioShulkerBox curioShulkerBox;
+      CurioShulkerBox curioShulkerBox = new CurioShulkerBox(stack);
       stack.getOrCreateChildTag("BlockEntityTag");
-
-      if (block instanceof ShulkerBoxBlock) {
-        curioShulkerBox = new CurioShulkerBox(stack);
-      } else {
-        curioShulkerBox = new CurioIronShulkerBox(stack);
-      }
 
       evt.addCapability(CuriosCapability.ID_ITEM, new ICapabilityProvider() {
         LazyOptional<ICurio> curio = LazyOptional.of(() -> curioShulkerBox);

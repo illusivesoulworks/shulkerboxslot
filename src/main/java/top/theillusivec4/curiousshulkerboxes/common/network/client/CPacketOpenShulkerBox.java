@@ -21,8 +21,6 @@ package top.theillusivec4.curiousshulkerboxes.common.network.client;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -32,7 +30,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.inventory.CurioShulkerBoxInventory;
 
 public class CPacketOpenShulkerBox {
@@ -60,17 +57,7 @@ public class CPacketOpenShulkerBox {
         ItemStack stack = box.getRight();
         String identifier = box.getLeft();
         int index = box.getMiddle();
-        INamedContainerProvider container;
-        Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
-        boolean isIronShulkerBox =
-            CuriousShulkerBoxes.isIronShulkerBoxesLoaded && IronShulkerBoxIntegration
-                .isIronShulkerBox(block);
-
-        if (isIronShulkerBox) {
-          container = IronShulkerBoxIntegration.createContainer(stack, identifier, index);
-        } else {
-          container = new CurioShulkerBoxInventory(stack, identifier, index);
-        }
+        INamedContainerProvider container = new CurioShulkerBoxInventory(stack, identifier, index);
         NetworkHooks.openGui(sender, container);
       });
     });

@@ -43,6 +43,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -222,9 +223,8 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
       LootTable loottable = player.world.getServer().getLootTableManager()
           .getLootTableFromLocation(lootTable);
       LootContext.Builder lootcontext$builder = (new LootContext.Builder(
-          (ServerWorld) player.world))
-          .withParameter(LootParameters.POSITION, new BlockPos(player.getPositionVec()))
-          .withSeed(lootTableSeed);
+          (ServerWorld) player.world)).withParameter(LootParameters.field_237457_g_,
+          Vector3d.copyCentered(player.getPosition())).withSeed(lootTableSeed);
       lootcontext$builder.withLuck(player.getLuck())
           .withParameter(LootParameters.THIS_ENTITY, player);
       loottable.fillInventory(this, lootcontext$builder.build(LootParameterSets.CHEST));
