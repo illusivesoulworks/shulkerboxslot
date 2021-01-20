@@ -21,6 +21,10 @@ repositories {
 		name = "Ladysnake Libs"
 		url = 'https://dl.bintray.com/ladysnake/libs'
 	}
+	maven {
+		name = "CurseMaven"
+		url = 'https://www.cursemaven.com'
+	}
 }
 
 dependencies {
@@ -30,6 +34,9 @@ dependencies {
 	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation "top.theillusivec4.curios:curios-fabric:${project.curios_version}"
+
+	modCompileOnly "curse.maven:enderite-399221:3040717"
+	modRuntime "curse.maven:enderite-399221:3040717"
 }
 
 processResources {

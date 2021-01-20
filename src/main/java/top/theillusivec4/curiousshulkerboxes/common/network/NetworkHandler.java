@@ -26,7 +26,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curiousshulkerboxes.common.CurioShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.CurioShulkerBoxInventory;
+import top.theillusivec4.curiousshulkerboxes.common.CuriousShulkerBoxesCommon;
+import top.theillusivec4.curiousshulkerboxes.common.integration.enderite.EnderiteIntegration;
 
 public class NetworkHandler {
 
@@ -41,9 +44,15 @@ public class NetworkHandler {
                 .getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock, playerEntity)
                 .ifPresent(found -> {
                   ItemStack stack = found.getRight();
+                  Block block = Block.getBlockFromItem(stack.getItem());
                   String id = found.getLeft();
                   int index = found.getMiddle();
-                  playerEntity.openHandledScreen(new CurioShulkerBoxInventory(stack, id, index));
+
+                  if (CuriousShulkerBoxesCommon.isEnderiteLoaded && EnderiteIntegration.isEnderiteShulkerBox(block)) {
+                    EnderiteIntegration.openHandledScreen(playerEntity, stack, id, index);
+                  } else {
+                    playerEntity.openHandledScreen(new CurioShulkerBoxInventory(stack, id, index));
+                  }
                 });
           }
         }))));

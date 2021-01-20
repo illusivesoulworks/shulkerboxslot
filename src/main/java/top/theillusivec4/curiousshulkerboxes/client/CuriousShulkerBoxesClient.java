@@ -24,6 +24,7 @@ import nerdhub.cardinal.components.api.event.ItemComponentCallbackV2;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -45,6 +46,9 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.CuriosComponent;
 import top.theillusivec4.curios.api.type.component.IRenderableCurio;
 import top.theillusivec4.curiousshulkerboxes.common.CurioShulkerBox;
+import top.theillusivec4.curiousshulkerboxes.common.CuriousShulkerBoxesCommon;
+import top.theillusivec4.curiousshulkerboxes.common.integration.enderite.EnderiteClientIntegration;
+import top.theillusivec4.curiousshulkerboxes.common.integration.enderite.EnderiteIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkPackets;
 
 public class CuriousShulkerBoxesClient implements ClientModInitializer {
@@ -118,5 +122,9 @@ public class CuriousShulkerBoxesClient implements ClientModInitializer {
       }
     }));
     ClientNetworkHandler.register();
+
+    if (FabricLoader.getInstance().isModLoaded("enderitemod")) {
+      EnderiteClientIntegration.setup();
+    }
   }
 }

@@ -21,6 +21,7 @@ package top.theillusivec4.curiousshulkerboxes.common;
 
 import nerdhub.cardinal.components.api.event.ItemComponentCallbackV2;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import org.apache.logging.log4j.LogManager;
@@ -29,12 +30,15 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.CuriosComponent;
 import top.theillusivec4.curios.api.SlotTypeInfo.BuildScheme;
 import top.theillusivec4.curios.api.SlotTypePreset;
+import top.theillusivec4.curiousshulkerboxes.common.integration.enderite.EnderiteIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 
 public class CuriousShulkerBoxesCommon implements ModInitializer {
 
   public static final String MODID = "curiousshulkerboxes";
   public static final Logger LOGGER = LogManager.getLogger();
+
+  public static boolean isEnderiteLoaded = false;
 
   @Override
   public void onInitialize() {
@@ -48,6 +52,11 @@ public class CuriousShulkerBoxesCommon implements ModInitializer {
     for (Item item : shulkerBoxes) {
       ItemComponentCallbackV2.event(item).register(((item1, stack, components) -> components
           .put(CuriosComponent.ITEM, new CurioShulkerBox(stack))));
+    }
+
+    if (FabricLoader.getInstance().isModLoaded("enderitemod")) {
+      isEnderiteLoaded = true;
+      EnderiteIntegration.setup();
     }
     CuriosApi.enqueueSlotType(BuildScheme.REGISTER, SlotTypePreset.BACK.getInfoBuilder().build());
     NetworkHandler.register();
