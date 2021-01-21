@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ITag;
@@ -57,7 +56,7 @@ import top.theillusivec4.curios.api.type.capability.ICurio;
 import top.theillusivec4.curiousshulkerboxes.client.EventHandlerClient;
 import top.theillusivec4.curiousshulkerboxes.client.KeyRegistry;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.CurioIronShulkerBox;
+import top.theillusivec4.curiousshulkerboxes.common.integration.enderitemod.EnderiteModIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.integration.netherite_plus.NetheritePlusIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
@@ -67,25 +66,32 @@ public class CuriousShulkerBoxes {
 
   public static final String MODID = "curiousshulkerboxes";
 
-  private static final ITag<Item> SHULKER_BOXES = ForgeTagHandler
-      .createOptionalTag(ForgeRegistries.ITEMS, new ResourceLocation("forge:shulker_boxes"));
-
   public static boolean isIronShulkerBoxesLoaded = false;
   public static boolean isNetheritePlusLoaded = false;
+  public static boolean isEnderiteLoaded = false;
 
   public CuriousShulkerBoxes() {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::enqueue);
-    isIronShulkerBoxesLoaded = ModList.get().isLoaded("ironshulkerbox");
-    isNetheritePlusLoaded = ModList.get().isLoaded("netherite_plus");
+    ModList modList = ModList.get();
+    isIronShulkerBoxesLoaded = modList.isLoaded("ironshulkerbox");
+    isNetheritePlusLoaded = modList.isLoaded("netherite_plus");
+    isEnderiteLoaded = modList.isLoaded("enderitemod");
   }
 
   public static boolean isShulkerBox(Item item) {
-    return
-        (item instanceof BlockItem && ((BlockItem) item).getBlock() instanceof ShulkerBoxBlock) ||
-            SHULKER_BOXES.contains(item);
+    Block block = Block.getBlockFromItem(item);
+
+    if (isIronShulkerBoxesLoaded && IronShulkerBoxIntegration.isIronShulkerBox(block)) {
+      return true;
+    } else if (isNetheritePlusLoaded && NetheritePlusIntegration.isNetheriteShulkerBox(block)) {
+      return true;
+    } else if (isEnderiteLoaded && EnderiteModIntegration.isEnderiteShulkerBox(block)) {
+      return true;
+    }
+    return block instanceof ShulkerBoxBlock;
   }
 
   public static Optional<ImmutableTriple<String, Integer, ItemStack>> getCurioShulkerBox(
@@ -123,8 +129,9 @@ public class CuriousShulkerBoxes {
         curioShulkerBox = IronShulkerBoxIntegration.getCurio(stack);
       } else if (isNetheritePlusLoaded && NetheritePlusIntegration.isNetheriteShulkerBox(block)) {
         curioShulkerBox = NetheritePlusIntegration.getCurio(stack);
-      }
-      else {
+      } else if (isEnderiteLoaded && EnderiteModIntegration.isEnderiteShulkerBox(block)) {
+        curioShulkerBox = EnderiteModIntegration.getCurio(stack);
+      } else {
         curioShulkerBox = new CurioShulkerBox(stack);
       }
       stack.getOrCreateChildTag("BlockEntityTag");
