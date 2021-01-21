@@ -26,8 +26,13 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ForgeTagHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -42,6 +47,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.CuriosCapability;
@@ -53,6 +59,7 @@ import top.theillusivec4.curiousshulkerboxes.client.KeyRegistry;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.CurioIronShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
+import top.theillusivec4.curiousshulkerboxes.common.integration.netherite_plus.NetheritePlusIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 
 @Mod(CuriousShulkerBoxes.MODID)
@@ -60,7 +67,11 @@ public class CuriousShulkerBoxes {
 
   public static final String MODID = "curiousshulkerboxes";
 
+  private static final ITag<Item> SHULKER_BOXES = ForgeTagHandler
+      .createOptionalTag(ForgeRegistries.ITEMS, new ResourceLocation("forge:shulker_boxes"));
+
   public static boolean isIronShulkerBoxesLoaded = false;
+  public static boolean isNetheritePlusLoaded = false;
 
   public CuriousShulkerBoxes() {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -68,21 +79,19 @@ public class CuriousShulkerBoxes {
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::enqueue);
     isIronShulkerBoxesLoaded = ModList.get().isLoaded("ironshulkerbox");
+    isNetheritePlusLoaded = ModList.get().isLoaded("netherite_plus");
   }
 
-  public static boolean isShulkerBox(Block block) {
-    boolean isIronShulkerBox =
-        isIronShulkerBoxesLoaded && IronShulkerBoxIntegration.isIronShulkerBox(block);
-    return block instanceof ShulkerBoxBlock || isIronShulkerBox;
+  public static boolean isShulkerBox(Item item) {
+    return
+        (item instanceof BlockItem && ((BlockItem) item).getBlock() instanceof ShulkerBoxBlock) ||
+            SHULKER_BOXES.contains(item);
   }
 
   public static Optional<ImmutableTriple<String, Integer, ItemStack>> getCurioShulkerBox(
       LivingEntity livingEntity) {
 
-    Predicate<ItemStack> shulkerBox = stack -> {
-      Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
-      return isShulkerBox(block);
-    };
+    Predicate<ItemStack> shulkerBox = stack -> isShulkerBox(stack.getItem());
     return CuriosApi.getCuriosHelper().findEquippedCurio(shulkerBox, livingEntity);
   }
 
@@ -104,15 +113,19 @@ public class CuriousShulkerBoxes {
   @SubscribeEvent
   public void attachCapabilities(AttachCapabilitiesEvent<ItemStack> evt) {
     ItemStack stack = evt.getObject();
-    Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
 
-    if (isShulkerBox(block)) {
-      CurioShulkerBox curioShulkerBox;
+    if (isShulkerBox(stack.getItem())) {
+      Block block = Block.getBlockFromItem(stack.getItem());
+      ICurio curioShulkerBox;
 
-      if (block instanceof ShulkerBoxBlock) {
+      if (isIronShulkerBoxesLoaded &&
+          IronShulkerBoxIntegration.isIronShulkerBox(block)) {
+        curioShulkerBox = IronShulkerBoxIntegration.getCurio(stack);
+      } else if (isNetheritePlusLoaded && NetheritePlusIntegration.isNetheriteShulkerBox(block)) {
+        curioShulkerBox = NetheritePlusIntegration.getCurio(stack);
+      }
+      else {
         curioShulkerBox = new CurioShulkerBox(stack);
-      } else {
-        curioShulkerBox = new CurioIronShulkerBox(stack);
       }
       stack.getOrCreateChildTag("BlockEntityTag");
 
@@ -122,7 +135,7 @@ public class CuriousShulkerBoxes {
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap,
-            @Nullable Direction side) {
+                                                 @Nullable Direction side) {
           return CuriosCapability.ITEM.orEmpty(cap, curio);
         }
       });

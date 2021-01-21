@@ -67,6 +67,8 @@ dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
     compile fg.deobf("top.theillusivec4.curios:curios-forge:${version_curios}")
     compile fg.deobf("curse.maven:ironshulkerboxes-314911:3164598")
+
+    compileOnly fg.deobf("curse.maven:netheriteplus-394120:3175587")
 }
 
 sourceSets {

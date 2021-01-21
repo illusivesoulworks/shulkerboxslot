@@ -26,11 +26,16 @@ import com.progwml6.ironshulkerbox.common.block.IronShulkerBoxesTypes;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import top.theillusivec4.curios.api.type.capability.ICurio;
 
 public class IronShulkerBoxIntegration {
 
   public static boolean isIronShulkerBox(Block block) {
     return block instanceof GenericIronShulkerBlock;
+  }
+
+  public static ICurio getCurio(ItemStack stack) {
+    return new CurioIronShulkerBox(stack);
   }
 
   public static INamedContainerProvider createContainer(ItemStack stack, String identifier,

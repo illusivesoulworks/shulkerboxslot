@@ -72,8 +72,7 @@ public class CurioIronShulkerBoxInventory extends CurioShulkerBoxInventory {
 
   @Override
   public boolean isItemValidForSlot(int index, @Nonnull ItemStack stack) {
-    Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
-    return !CuriousShulkerBoxes.isShulkerBox(block);
+    return !CuriousShulkerBoxes.isShulkerBox(stack.getItem());
   }
 
   @Nullable
