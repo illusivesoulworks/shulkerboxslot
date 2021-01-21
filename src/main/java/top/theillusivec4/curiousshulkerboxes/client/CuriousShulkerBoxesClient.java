@@ -46,16 +46,15 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.CuriosComponent;
 import top.theillusivec4.curios.api.type.component.IRenderableCurio;
 import top.theillusivec4.curiousshulkerboxes.common.CurioShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.CuriousShulkerBoxesCommon;
 import top.theillusivec4.curiousshulkerboxes.common.integration.enderite.EnderiteClientIntegration;
-import top.theillusivec4.curiousshulkerboxes.common.integration.enderite.EnderiteIntegration;
+import top.theillusivec4.curiousshulkerboxes.common.integration.netheriteplus.NetheriteClientIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkPackets;
 
 public class CuriousShulkerBoxesClient implements ClientModInitializer {
 
   @Override
   public void onInitializeClient() {
-    Item[] shulkerBoxes = new Item[]{Items.SHULKER_BOX, Items.BLACK_SHULKER_BOX,
+    Item[] shulkerBoxes = new Item[] {Items.SHULKER_BOX, Items.BLACK_SHULKER_BOX,
         Items.BLUE_SHULKER_BOX, Items.BROWN_SHULKER_BOX, Items.CYAN_SHULKER_BOX,
         Items.RED_SHULKER_BOX, Items.GRAY_SHULKER_BOX, Items.GREEN_SHULKER_BOX,
         Items.MAGENTA_SHULKER_BOX, Items.LIGHT_BLUE_SHULKER_BOX, Items.LIGHT_GRAY_SHULKER_BOX,
@@ -69,9 +68,11 @@ public class CuriousShulkerBoxesClient implements ClientModInitializer {
 
             @Override
             public void render(String identifier, int index, MatrixStack matrixStack,
-                VertexConsumerProvider vertexConsumerProvider, int light, LivingEntity livingEntity,
-                float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks,
-                float netHeadYaw, float headPitch) {
+                               VertexConsumerProvider vertexConsumerProvider, int light,
+                               LivingEntity livingEntity,
+                               float limbSwing, float limbSwingAmount, float partialTicks,
+                               float ageInTicks,
+                               float netHeadYaw, float headPitch) {
               CuriosApi.getCuriosHelper().getCurio(stack).ifPresent(curio -> {
 
                 if (curio instanceof CurioShulkerBox) {
@@ -123,8 +124,15 @@ public class CuriousShulkerBoxesClient implements ClientModInitializer {
     }));
     ClientNetworkHandler.register();
 
-    if (FabricLoader.getInstance().isModLoaded("enderitemod")) {
+    // Integrations
+    FabricLoader loader = FabricLoader.getInstance();
+
+    if (loader.isModLoaded("enderitemod")) {
       EnderiteClientIntegration.setup();
+    }
+
+    if (loader.isModLoaded("netherite_plus")) {
+      NetheriteClientIntegration.setup();
     }
   }
 }

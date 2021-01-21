@@ -23,13 +23,14 @@ import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curiousshulkerboxes.common.CurioShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.CurioShulkerBoxInventory;
 import top.theillusivec4.curiousshulkerboxes.common.CuriousShulkerBoxesCommon;
 import top.theillusivec4.curiousshulkerboxes.common.integration.enderite.EnderiteIntegration;
+import top.theillusivec4.curiousshulkerboxes.common.integration.netheriteplus.NetheriteIntegration;
 
 public class NetworkHandler {
 
@@ -40,15 +41,16 @@ public class NetworkHandler {
 
           if (playerEntity != null) {
             playerEntity.incrementStat(Stats.OPEN_SHULKER_BOX);
-            CuriosApi.getCuriosHelper().findEquippedCurio((itemStack) -> Block
-                .getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock, playerEntity)
+            CuriosApi.getCuriosHelper()
+                .findEquippedCurio((itemStack) -> isShulkerBox(itemStack), playerEntity)
                 .ifPresent(found -> {
                   ItemStack stack = found.getRight();
                   Block block = Block.getBlockFromItem(stack.getItem());
                   String id = found.getLeft();
                   int index = found.getMiddle();
 
-                  if (CuriousShulkerBoxesCommon.isEnderiteLoaded && EnderiteIntegration.isEnderiteShulkerBox(block)) {
+                  if (CuriousShulkerBoxesCommon.isEnderiteLoaded &&
+                      EnderiteIntegration.isEnderiteShulkerBox(block)) {
                     EnderiteIntegration.openHandledScreen(playerEntity, stack, id, index);
                   } else {
                     playerEntity.openHandledScreen(new CurioShulkerBoxInventory(stack, id, index));
@@ -56,5 +58,24 @@ public class NetworkHandler {
                 });
           }
         }))));
+  }
+
+  private static boolean isShulkerBox(ItemStack stack) {
+
+    if (stack.getItem() instanceof BlockItem) {
+      BlockItem blockItem = (BlockItem) stack.getItem();
+      Block block = blockItem.getBlock();
+
+      if (CuriousShulkerBoxesCommon.isEnderiteLoaded &&
+          EnderiteIntegration.isEnderiteShulkerBox(block)) {
+        return true;
+      } else if (CuriousShulkerBoxesCommon.isNetheriteLoaded &&
+          NetheriteIntegration.isNetheriteShulkerBox(block)) {
+        return true;
+      } else {
+        return block instanceof ShulkerBoxBlock;
+      }
+    }
+    return false;
   }
 }

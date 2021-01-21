@@ -37,6 +37,9 @@ dependencies {
 
 	modCompileOnly "curse.maven:enderite-399221:3040717"
 	modRuntime "curse.maven:enderite-399221:3040717"
+
+	modCompileOnly "curse.maven:netheriteplus-394120:3173169"
+//	modRuntime "curse.maven:netheriteplus-394120:3173169"
 }
 
 processResources {
