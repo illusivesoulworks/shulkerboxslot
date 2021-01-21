@@ -57,11 +57,16 @@ repositories {
     maven {
         url = "https://maven.theillusivec4.top/"
     }
+    maven {
+        name = "CurseMaven"
+        url = "https://www.cursemaven.com"
+    }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
     compile fg.deobf("top.theillusivec4.curios:curios-forge:${version_curios}")
+    compile fg.deobf("curse.maven:ironshulkerboxes-314911:3164598")
 }
 
 sourceSets {
@@ -115,5 +120,8 @@ curseforge {
             requiredDependency 'curios'
         }
         addArtifact(sourcesJar)
+        "${curse_versions}".split(',').each {
+            addGameVersion "${it}"
+        }
     }
 }
