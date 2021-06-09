@@ -1,10 +1,10 @@
 plugins {
-	id 'fabric-loom' version '0.4-SNAPSHOT'
+	id 'fabric-loom' version '0.8-SNAPSHOT'
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -18,50 +18,51 @@ repositories {
         url = "https://maven.theillusivec4.top/"
     }
 	maven {
-		name = "Ladysnake Libs"
-		url = 'https://dl.bintray.com/ladysnake/libs'
+		name = "TerraformersMC"
+		url = "https://maven.terraformersmc.com/"
 	}
 	maven {
-		name = "CurseMaven"
-		url = 'https://www.cursemaven.com'
+		name = "Ladysnake Libs"
+		url = "https://ladysnake.jfrog.io/artifactory/mods"
 	}
+//	maven {
+//		name = "CurseMaven"
+//		url = 'https://www.cursemaven.com'
+//	}
 }
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
-	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "dev.emi:trinkets:${trinkets_version}"
+	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-item:${cca_version}"
 
-	modImplementation "top.theillusivec4.curios:curios-fabric:${project.curios_version}"
+	include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-item:${cca_version}"
 
-	modCompileOnly "curse.maven:enderite-399221:3040717"
-	modRuntime "curse.maven:enderite-399221:3040717"
-
-	modCompileOnly "curse.maven:netheriteplus-394120:3173169"
+//	modCompileOnly "curse.maven:enderite-399221:3040717"
+//	modRuntime "curse.maven:enderite-399221:3040717"
+//
+//	modCompileOnly "curse.maven:netheriteplus-394120:3173169"
 //	modRuntime "curse.maven:netheriteplus-394120:3173169"
 }
 
 processResources {
 	inputs.property "version", project.version
 
-	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
-		expand 'version': project.version
-	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
 	}
 }
 
-tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 16
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-	archiveClassifier.set("sources")
-	from sourceSets.main.allSource
+java {
+	withSourcesJar()
 }
 
 sourceSets {
@@ -79,14 +80,14 @@ curseforge {
 		releaseType = "${curse_release}"
 		changelogType = 'markdown'
 		changelog = file('docs/CHANGELOG.md')
-		addGameVersion "Java 8"
+		addGameVersion "Java 16"
         addGameVersion "Fabric"
 		addGameVersion project.minecraft_version
 		addArtifact(sourcesJar)
 		mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"))
 
 		relations {
-			requiredDependency 'curios-fabric'
+			requiredDependency 'trinkets-fabric'
 		}
 		afterEvaluate {
 			uploadTask.dependsOn(remapJar)
