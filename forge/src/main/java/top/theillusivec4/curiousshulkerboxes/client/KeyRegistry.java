@@ -22,8 +22,8 @@ package top.theillusivec4.curiousshulkerboxes.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.KeyMapping;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.settings.IKeyConflictContext;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
 
