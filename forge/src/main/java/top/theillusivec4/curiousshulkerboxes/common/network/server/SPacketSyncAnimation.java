@@ -21,13 +21,13 @@ package top.theillusivec4.curiousshulkerboxes.common.network.server;
 
 import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.ShulkerBoxTileEntity;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
@@ -40,36 +40,34 @@ public class SPacketSyncAnimation {
   private final boolean isClosing;
 
   public SPacketSyncAnimation(int entityId, String identifier, int index, boolean isClosing) {
-
     this.entityId = entityId;
     this.identifier = identifier;
     this.index = index;
     this.isClosing = isClosing;
   }
 
-  public static void encode(SPacketSyncAnimation msg, PacketBuffer buf) {
+  public static void encode(SPacketSyncAnimation msg, FriendlyByteBuf buf) {
 
     buf.writeInt(msg.entityId);
-    buf.writeString(msg.identifier);
+    buf.writeUtf(msg.identifier);
     buf.writeInt(msg.index);
     buf.writeBoolean(msg.isClosing);
   }
 
-  public static SPacketSyncAnimation decode(PacketBuffer buf) {
+  public static SPacketSyncAnimation decode(FriendlyByteBuf buf) {
 
-    return new SPacketSyncAnimation(buf.readInt(), buf.readString(25), buf.readInt(),
+    return new SPacketSyncAnimation(buf.readInt(), buf.readUtf(25), buf.readInt(),
         buf.readBoolean());
   }
 
   public static void handle(SPacketSyncAnimation msg, Supplier<NetworkEvent.Context> ctx) {
-
     ctx.get().enqueueWork(() -> {
-      ClientWorld world = Minecraft.getInstance().world;
+      ClientLevel world = Minecraft.getInstance().level;
 
       if (world == null) {
         return;
       }
-      Entity entity = world.getEntityByID(msg.entityId);
+      Entity entity = world.getEntity(msg.entityId);
 
       if (!(entity instanceof LivingEntity)) {
         return;
@@ -89,10 +87,10 @@ public class SPacketSyncAnimation {
 
                     if (msg.isClosing) {
                       ((CurioShulkerBox) curio)
-                          .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.CLOSING);
+                          .setAnimationStatus(ShulkerBoxBlockEntity.AnimationStatus.CLOSING);
                     } else {
                       ((CurioShulkerBox) curio)
-                          .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.OPENING);
+                          .setAnimationStatus(ShulkerBoxBlockEntity.AnimationStatus.OPENING);
                     }
                   }
                 });

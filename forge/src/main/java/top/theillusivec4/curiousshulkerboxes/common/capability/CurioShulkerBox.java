@@ -19,26 +19,15 @@
 
 package top.theillusivec4.curiousshulkerboxes.common.capability;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import javax.annotation.Nonnull;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.client.renderer.Atlases;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.model.ShulkerModel;
-import net.minecraft.client.renderer.model.RenderMaterial;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ShulkerBoxTileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
+import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurio;
 
 public class CurioShulkerBox implements ICurio {
@@ -50,7 +39,8 @@ public class CurioShulkerBox implements ICurio {
   protected ItemStack stack;
   protected Object model;
 
-  private ShulkerBoxTileEntity.AnimationStatus animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
+  private ShulkerBoxBlockEntity.AnimationStatus animationStatus =
+      ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
   private float progress;
   private float progressOld;
 
@@ -58,7 +48,7 @@ public class CurioShulkerBox implements ICurio {
     this.stack = stack;
   }
 
-  public void setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus status) {
+  public void setAnimationStatus(ShulkerBoxBlockEntity.AnimationStatus status) {
     this.animationStatus = status;
   }
 
@@ -67,64 +57,60 @@ public class CurioShulkerBox implements ICurio {
   }
 
   @Override
-  public void curioTick(String identifier, int index, LivingEntity livingEntity) {
+  public ItemStack getStack() {
+    return this.stack;
+  }
+
+  @Override
+  public void curioTick(SlotContext slotContext) {
     this.progressOld = this.progress;
 
     switch (this.animationStatus) {
-      case CLOSED:
-        this.progress = 0.0F;
-        break;
-      case OPENING:
+      case CLOSED -> this.progress = 0.0F;
+      case OPENING -> {
         this.progress += 0.1F;
         if (this.progress >= 1.0F) {
-          this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.OPENED;
+          this.animationStatus = ShulkerBoxBlockEntity.AnimationStatus.OPENED;
           this.progress = 1.0F;
         }
-        break;
-      case CLOSING:
+      }
+      case CLOSING -> {
         this.progress -= 0.1F;
         if (this.progress <= 0.0F) {
-          this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
+          this.animationStatus = ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
           this.progress = 0.0F;
         }
-        break;
-      case OPENED:
-        this.progress = 1.0F;
+      }
+      case OPENED -> this.progress = 1.0F;
     }
   }
 
+  @Nonnull
   @Override
-  public void playRightClickEquipSound(LivingEntity livingEntity) {
-    livingEntity.world.playSound(null, new BlockPos(livingEntity.getPositionVec()),
-        SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+  public SoundInfo getEquipSound(SlotContext slotContext) {
+    return new SoundInfo(SoundEvents.SHULKER_BOX_CLOSE, 1.0F, 1.0F);
   }
 
   @Override
-  public boolean canRightClickEquip() {
+  public boolean canEquipFromUse(SlotContext slotContext) {
     return true;
   }
 
   @Override
-  public boolean canSync(String identifier, int index, LivingEntity livingEntity) {
+  public boolean canSync(SlotContext slotContext) {
     return true;
   }
 
   @Nonnull
   @Override
-  public CompoundNBT writeSyncData() {
-    CompoundNBT compound = new CompoundNBT();
-    int state = 0;
-
-    switch (this.animationStatus) {
-      case OPENING:
-        state = 1;
-        break;
-      case CLOSING:
-        state = 2;
-        break;
-      case OPENED:
-        state = 3;
-    }
+  public CompoundTag writeSyncData(SlotContext slotContext) {
+    CompoundTag compound = new CompoundTag();
+    int state = switch (this.animationStatus) {
+      case OPENING -> 1;
+      case CLOSING -> 2;
+      case OPENED -> 3;
+      default -> 0;
+    };
     compound.putInt(ANIMATION_TAG, state);
     compound.putFloat(PROGRESS_TAG, this.progress);
     compound.putFloat(OLD_PROGRESS_TAG, this.progressOld);
@@ -132,65 +118,16 @@ public class CurioShulkerBox implements ICurio {
   }
 
   @Override
-  public void readSyncData(CompoundNBT compound) {
+  public void readSyncData(SlotContext slotContext, CompoundTag compound) {
     int state = compound.getInt(ANIMATION_TAG);
 
     switch (state) {
-      case 0:
-        this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
-        break;
-      case 1:
-        this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.OPENING;
-        break;
-      case 2:
-        this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSING;
-        break;
-      case 3:
-        this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.OPENED;
+      case 0 -> this.animationStatus = ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
+      case 1 -> this.animationStatus = ShulkerBoxBlockEntity.AnimationStatus.OPENING;
+      case 2 -> this.animationStatus = ShulkerBoxBlockEntity.AnimationStatus.CLOSING;
+      case 3 -> this.animationStatus = ShulkerBoxBlockEntity.AnimationStatus.OPENED;
     }
     this.progress = compound.getFloat(PROGRESS_TAG);
     this.progressOld = compound.getFloat(OLD_PROGRESS_TAG);
-  }
-
-  @Override
-  public boolean canRender(String identifier, int index, LivingEntity livingEntity) {
-    return true;
-  }
-
-  @Override
-  public void render(String identifier, int index, MatrixStack matrixStack,
-      IRenderTypeBuffer renderTypeBuffer, int light, LivingEntity livingEntity, float limbSwing,
-      float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
-      float headPitch) {
-    Direction direction = Direction.SOUTH;
-    DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
-    RenderMaterial material;
-
-    if (color == null) {
-      material = Atlases.DEFAULT_SHULKER_TEXTURE;
-    } else {
-      material = Atlases.SHULKER_TEXTURES.get(color.getId());
-    }
-    ICurio.RenderHelper.translateIfSneaking(matrixStack, livingEntity);
-    ICurio.RenderHelper.rotateIfSneaking(matrixStack, livingEntity);
-    matrixStack.push();
-    matrixStack.translate(0.5D, 0.5D, 0.5D);
-    float f = 0.45F;
-    matrixStack.scale(f, f, f);
-    matrixStack.rotate(direction.getRotation());
-    matrixStack.scale(1.0F, -1.0F, -1.0F);
-    matrixStack.translate(-1.1125D, -0.675D, -0.5D);
-    IVertexBuilder ivertexbuilder = material
-        .getBuffer(renderTypeBuffer, RenderType::getEntityCutoutNoCull);
-
-    if (!(this.model instanceof ShulkerModel)) {
-      this.model = new ShulkerModel<>();
-    }
-    ShulkerModel<?> model = (ShulkerModel<?>) this.model;
-    model.getBase().render(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY);
-    matrixStack.translate(0.0D, (-this.getProgress(partialTicks) * 0.5F), 0.0D);
-    matrixStack.rotate(Vector3f.YP.rotationDegrees(270.0F * this.getProgress(partialTicks)));
-    model.getLid().render(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY);
-    matrixStack.pop();
   }
 }

@@ -23,42 +23,36 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ForgeTagHandler;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.CuriosCapability;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 import top.theillusivec4.curios.api.SlotTypePreset;
+import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 import top.theillusivec4.curios.api.type.capability.ICurio;
-import top.theillusivec4.curiousshulkerboxes.client.EventHandlerClient;
+import top.theillusivec4.curiousshulkerboxes.client.ClientEventListener;
+import top.theillusivec4.curiousshulkerboxes.client.CurioShulkerBoxRenderer;
 import top.theillusivec4.curiousshulkerboxes.client.KeyRegistry;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
-import top.theillusivec4.curiousshulkerboxes.common.integration.enderitemod.EnderiteModIntegration;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
-import top.theillusivec4.curiousshulkerboxes.common.integration.netherite_plus.NetheritePlusIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 
 @Mod(CuriousShulkerBoxes.MODID)
@@ -66,49 +60,55 @@ public class CuriousShulkerBoxes {
 
   public static final String MODID = "curiousshulkerboxes";
 
-  public static boolean isIronShulkerBoxesLoaded = false;
-  public static boolean isNetheritePlusLoaded = false;
-  public static boolean isEnderiteLoaded = false;
-
   public CuriousShulkerBoxes() {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::enqueue);
-    ModList modList = ModList.get();
-    isIronShulkerBoxesLoaded = modList.isLoaded("ironshulkerbox");
-    isNetheritePlusLoaded = modList.isLoaded("netherite_plus");
-    isEnderiteLoaded = modList.isLoaded("enderitemod");
   }
 
   public static boolean isShulkerBox(Item item) {
-    Block block = Block.getBlockFromItem(item);
-
-    if (isIronShulkerBoxesLoaded && IronShulkerBoxIntegration.isIronShulkerBox(block)) {
-      return true;
-    } else if (isNetheritePlusLoaded && NetheritePlusIntegration.isNetheriteShulkerBox(block)) {
-      return true;
-    } else if (isEnderiteLoaded && EnderiteModIntegration.isEnderiteShulkerBox(block)) {
-      return true;
-    }
+    Block block = Block.byItem(item);
     return block instanceof ShulkerBoxBlock;
   }
 
   public static Optional<ImmutableTriple<String, Integer, ItemStack>> getCurioShulkerBox(
       LivingEntity livingEntity) {
-
     Predicate<ItemStack> shulkerBox = stack -> isShulkerBox(stack.getItem());
     return CuriosApi.getCuriosHelper().findEquippedCurio(shulkerBox, livingEntity);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
-    MinecraftForge.EVENT_BUS.register(this);
+    MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, this::attachCapabilities);
     NetworkHandler.register();
   }
 
   private void clientSetup(final FMLClientSetupEvent evt) {
     KeyRegistry.register();
-    MinecraftForge.EVENT_BUS.register(new EventHandlerClient());
+    MinecraftForge.EVENT_BUS.register(new ClientEventListener());
+    Item[] shulkers = new Item[] {
+        Items.SHULKER_BOX,
+        Items.BLACK_SHULKER_BOX,
+        Items.BLUE_SHULKER_BOX,
+        Items.BROWN_SHULKER_BOX,
+        Items.CYAN_SHULKER_BOX,
+        Items.GRAY_SHULKER_BOX,
+        Items.GREEN_SHULKER_BOX,
+        Items.LIGHT_BLUE_SHULKER_BOX,
+        Items.LIGHT_GRAY_SHULKER_BOX,
+        Items.LIME_SHULKER_BOX,
+        Items.MAGENTA_SHULKER_BOX,
+        Items.ORANGE_SHULKER_BOX,
+        Items.PINK_SHULKER_BOX,
+        Items.PURPLE_SHULKER_BOX,
+        Items.RED_SHULKER_BOX,
+        Items.WHITE_SHULKER_BOX,
+        Items.YELLOW_SHULKER_BOX
+    };
+
+    for (Item shulker : shulkers) {
+      CuriosRendererRegistry.register(shulker, CurioShulkerBoxRenderer::new);
+    }
   }
 
   private void enqueue(final InterModEnqueueEvent evt) {
@@ -116,28 +116,15 @@ public class CuriousShulkerBoxes {
         () -> SlotTypePreset.BACK.getMessageBuilder().build());
   }
 
-  @SubscribeEvent
-  public void attachCapabilities(AttachCapabilitiesEvent<ItemStack> evt) {
+  private void attachCapabilities(AttachCapabilitiesEvent<ItemStack> evt) {
     ItemStack stack = evt.getObject();
 
     if (isShulkerBox(stack.getItem())) {
-      Block block = Block.getBlockFromItem(stack.getItem());
-      ICurio curioShulkerBox;
-
-      if (isIronShulkerBoxesLoaded &&
-          IronShulkerBoxIntegration.isIronShulkerBox(block)) {
-        curioShulkerBox = IronShulkerBoxIntegration.getCurio(stack);
-      } else if (isNetheritePlusLoaded && NetheritePlusIntegration.isNetheriteShulkerBox(block)) {
-        curioShulkerBox = NetheritePlusIntegration.getCurio(stack);
-      } else if (isEnderiteLoaded && EnderiteModIntegration.isEnderiteShulkerBox(block)) {
-        curioShulkerBox = EnderiteModIntegration.getCurio(stack);
-      } else {
-        curioShulkerBox = new CurioShulkerBox(stack);
-      }
-      stack.getOrCreateChildTag("BlockEntityTag");
+      ICurio curioShulkerBox = new CurioShulkerBox(stack);
+      stack.getOrCreateTagElement("BlockEntityTag");
 
       evt.addCapability(CuriosCapability.ID_ITEM, new ICapabilityProvider() {
-        LazyOptional<ICurio> curio = LazyOptional.of(() -> curioShulkerBox);
+        final LazyOptional<ICurio> curio = LazyOptional.of(() -> curioShulkerBox);
 
         @Nonnull
         @Override

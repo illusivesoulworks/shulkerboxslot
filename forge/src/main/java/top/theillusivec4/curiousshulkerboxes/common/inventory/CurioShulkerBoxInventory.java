@@ -21,44 +21,44 @@ package top.theillusivec4.curiousshulkerboxes.common.inventory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.inventory.container.ShulkerBoxContainer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameterSets;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.LootTable;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ShulkerBoxTileEntity;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ShulkerBoxMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curiousshulkerboxes.common.capability.CurioShulkerBox;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 import top.theillusivec4.curiousshulkerboxes.common.network.server.SPacketSyncAnimation;
 
-public class CurioShulkerBoxInventory implements IInventory, INamedContainerProvider {
+public class CurioShulkerBoxInventory implements Container, MenuProvider {
 
   protected NonNullList<ItemStack> items;
 
-  private ItemStack shulkerBox;
-  private String identifier;
-  private int index;
+  private final ItemStack shulkerBox;
+  private final String identifier;
+  private final int index;
 
   public CurioShulkerBoxInventory(ItemStack shulkerBox, String identifier, int index) {
     this.shulkerBox = shulkerBox;
@@ -68,20 +68,20 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
   }
 
   @Override
-  public int getSizeInventory() {
+  public int getContainerSize() {
     return this.items.size();
   }
 
   @Override
-  public int getInventoryStackLimit() {
+  public int getMaxStackSize() {
     return 64;
   }
 
   @Override
-  public void openInventory(@Nonnull PlayerEntity player) {
+  public void startOpen(@Nonnull Player player) {
 
     if (!player.isSpectator()) {
-      CompoundNBT tag = shulkerBox.getChildTag("BlockEntityTag");
+      CompoundTag tag = shulkerBox.getTagElement("BlockEntityTag");
 
       if (tag != null) {
 
@@ -97,25 +97,25 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
 
         if (curio instanceof CurioShulkerBox) {
           ((CurioShulkerBox) curio)
-              .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.OPENING);
+              .setAnimationStatus(ShulkerBoxBlockEntity.AnimationStatus.OPENING);
         }
       });
 
-      if (player instanceof ServerPlayerEntity) {
+      if (player instanceof ServerPlayer) {
         NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
-            new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, false));
+            new SPacketSyncAnimation(player.getId(), this.identifier, this.index, false));
       }
-      player.world.playSound(null, new BlockPos(player.getPositionVec()),
-          SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F,
-          player.world.rand.nextFloat() * 0.1F + 0.9F);
+      player.level.playSound(null, new BlockPos(player.position()),
+          SoundEvents.SHULKER_BOX_OPEN, SoundSource.BLOCKS, 0.5F,
+          player.level.random.nextFloat() * 0.1F + 0.9F);
     }
   }
 
   @Override
-  public void closeInventory(@Nonnull PlayerEntity player) {
+  public void stopOpen(@Nonnull Player player) {
 
     if (!player.isSpectator()) {
-      CompoundNBT nbttagcompound = shulkerBox.getChildTag("BlockEntityTag");
+      CompoundTag nbttagcompound = shulkerBox.getTagElement("BlockEntityTag");
 
       if (nbttagcompound != null) {
         nbttagcompound.remove("LootTable");
@@ -126,30 +126,30 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
 
         if (curio instanceof CurioShulkerBox) {
           ((CurioShulkerBox) curio)
-              .setAnimationStatus(ShulkerBoxTileEntity.AnimationStatus.CLOSING);
+              .setAnimationStatus(ShulkerBoxBlockEntity.AnimationStatus.CLOSING);
         }
       });
 
-      if (player instanceof ServerPlayerEntity) {
+      if (player instanceof ServerPlayer) {
         NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
-            new SPacketSyncAnimation(player.getEntityId(), this.identifier, this.index, true));
+            new SPacketSyncAnimation(player.getId(), this.identifier, this.index, true));
       }
-      player.world.playSound(null, new BlockPos(player.getPositionVec()),
-          SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS, 0.5F,
-          player.world.rand.nextFloat() * 0.1F + 0.9F);
+      player.level.playSound(null, new BlockPos(player.position()),
+          SoundEvents.SHULKER_BOX_CLOSE, SoundSource.BLOCKS, 0.5F,
+          player.level.random.nextFloat() * 0.1F + 0.9F);
     }
   }
 
-  public void loadFromNbt(CompoundNBT compound) {
-    this.items = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+  public void loadFromNbt(CompoundTag compound) {
+    this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
 
     if (compound.contains("Items", 9)) {
-      ItemStackHelper.loadAllItems(compound, this.items);
+      ContainerHelper.loadAllItems(compound, this.items);
     }
   }
 
-  public void saveToNbt(CompoundNBT compound) {
-    ItemStackHelper.saveAllItems(compound, this.items, true);
+  public void saveToNbt(CompoundTag compound) {
+    ContainerHelper.saveAllItems(compound, this.items, true);
   }
 
   @Override
@@ -166,75 +166,75 @@ public class CurioShulkerBoxInventory implements IInventory, INamedContainerProv
 
   @Nonnull
   @Override
-  public ItemStack getStackInSlot(int index) {
+  public ItemStack getItem(int index) {
     return this.items.get(index);
   }
 
   @Nonnull
   @Override
-  public ItemStack decrStackSize(int index, int count) {
-    return ItemStackHelper.getAndSplit(this.items, index, count);
+  public ItemStack removeItem(int index, int count) {
+    return ContainerHelper.removeItem(this.items, index, count);
   }
 
   @Nonnull
   @Override
-  public ItemStack removeStackFromSlot(int index) {
-    return ItemStackHelper.getAndRemove(this.items, index);
+  public ItemStack removeItemNoUpdate(int index) {
+    return ContainerHelper.takeItem(this.items, index);
   }
 
   @Override
-  public void setInventorySlotContents(int index, @Nullable ItemStack stack) {
+  public void setItem(int index, @Nullable ItemStack stack) {
     this.items.set(index, stack == null ? ItemStack.EMPTY : stack);
 
-    if (stack != null && stack.getCount() > this.getInventoryStackLimit()) {
-      stack.setCount(this.getInventoryStackLimit());
+    if (stack != null && stack.getCount() > this.getMaxStackSize()) {
+      stack.setCount(this.getMaxStackSize());
     }
   }
 
   @Override
-  public void markDirty() {
+  public void setChanged() {
 
   }
 
   @Override
-  public boolean isItemValidForSlot(int index, @Nonnull ItemStack stack) {
-    return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
+  public boolean canPlaceItem(int index, @Nonnull ItemStack stack) {
+    return !(Block.byItem(stack.getItem()) instanceof ShulkerBoxBlock);
   }
 
   @Override
-  public void clear() {
+  public void clearContent() {
     this.items.clear();
   }
 
   @Override
-  public boolean isUsableByPlayer(@Nonnull PlayerEntity player) {
+  public boolean stillValid(@Nonnull Player player) {
     return true;
   }
 
   @Nonnull
   @Override
-  public ITextComponent getDisplayName() {
-    return shulkerBox.getDisplayName();
+  public Component getDisplayName() {
+    return shulkerBox.getHoverName();
   }
 
-  public void fillWithLoot(ResourceLocation lootTable, long lootTableSeed, PlayerEntity player) {
+  public void fillWithLoot(ResourceLocation lootTable, long lootTableSeed, Player player) {
 
-    if (player.world.getServer() != null) {
-      LootTable loottable = player.world.getServer().getLootTableManager()
-          .getLootTableFromLocation(lootTable);
+    if (player.level.getServer() != null) {
+      LootTable loottable = player.level.getServer().getLootTables()
+          .get(lootTable);
       LootContext.Builder lootcontext$builder = (new LootContext.Builder(
-          (ServerWorld) player.world)).withParameter(LootParameters.field_237457_g_,
-          Vector3d.copyCentered(player.getPosition())).withSeed(lootTableSeed);
+          (ServerLevel) player.level)).withParameter(LootContextParams.ORIGIN,
+          Vec3.atCenterOf(player.blockPosition())).withOptionalRandomSeed(lootTableSeed);
       lootcontext$builder.withLuck(player.getLuck())
-          .withParameter(LootParameters.THIS_ENTITY, player);
-      loottable.fillInventory(this, lootcontext$builder.build(LootParameterSets.CHEST));
+          .withParameter(LootContextParams.THIS_ENTITY, player);
+      loottable.fill(this, lootcontext$builder.create(LootContextParamSets.CHEST));
     }
   }
 
   @Nullable
   @Override
-  public Container createMenu(int i, @Nonnull PlayerInventory playerInventory,
-      @Nonnull PlayerEntity playerEntity) {
-    return new ShulkerBoxContainer(i, playerInventory, this);
+  public AbstractContainerMenu createMenu(int i, @Nonnull Inventory playerInventory,
+                                          @Nonnull Player playerEntity) {
+    return new ShulkerBoxMenu(i, playerInventory, this);
   }
 }

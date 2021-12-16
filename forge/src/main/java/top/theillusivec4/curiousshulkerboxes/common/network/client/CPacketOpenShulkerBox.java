@@ -21,56 +21,42 @@ package top.theillusivec4.curiousshulkerboxes.common.network.client;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curiousshulkerboxes.CuriousShulkerBoxes;
-import top.theillusivec4.curiousshulkerboxes.common.integration.ironshulkerbox.IronShulkerBoxIntegration;
 import top.theillusivec4.curiousshulkerboxes.common.inventory.CurioShulkerBoxInventory;
 
 public class CPacketOpenShulkerBox {
 
-  public static void encode(CPacketOpenShulkerBox msg, PacketBuffer buf) {
+  public static void encode(CPacketOpenShulkerBox msg, FriendlyByteBuf buf) {
 
   }
 
-  public static CPacketOpenShulkerBox decode(PacketBuffer buf) {
+  public static CPacketOpenShulkerBox decode(FriendlyByteBuf buf) {
     return new CPacketOpenShulkerBox();
   }
 
   public static void handle(CPacketOpenShulkerBox msg, Supplier<NetworkEvent.Context> ctx) {
-
     ctx.get().enqueueWork(() -> {
-      ServerPlayerEntity sender = ctx.get().getSender();
+      ServerPlayer sender = ctx.get().getSender();
 
       if (sender == null) {
         return;
       }
-      sender.addStat(Stats.OPEN_SHULKER_BOX);
+      sender.awardStat(Stats.OPEN_SHULKER_BOX);
       Optional<ImmutableTriple<String, Integer, ItemStack>> curioShulkerBox = CuriousShulkerBoxes
           .getCurioShulkerBox(sender);
       curioShulkerBox.ifPresent(box -> {
         ItemStack stack = box.getRight();
         String identifier = box.getLeft();
         int index = box.getMiddle();
-        INamedContainerProvider container;
-        Block block = ShulkerBoxBlock.getBlockFromItem(stack.getItem());
-        boolean isIronShulkerBox =
-            CuriousShulkerBoxes.isIronShulkerBoxesLoaded && IronShulkerBoxIntegration
-                .isIronShulkerBox(block);
-
-        if (isIronShulkerBox) {
-          container = IronShulkerBoxIntegration.createContainer(stack, identifier, index);
-        } else {
-          container = new CurioShulkerBoxInventory(stack, identifier, index);
-        }
+        MenuProvider container = new CurioShulkerBoxInventory(stack, identifier, index);
         NetworkHooks.openGui(sender, container);
       });
     });

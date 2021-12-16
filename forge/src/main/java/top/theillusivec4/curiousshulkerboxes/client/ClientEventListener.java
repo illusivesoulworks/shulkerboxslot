@@ -25,7 +25,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import top.theillusivec4.curiousshulkerboxes.common.network.NetworkHandler;
 import top.theillusivec4.curiousshulkerboxes.common.network.client.CPacketOpenShulkerBox;
 
-public class EventHandlerClient {
+public class ClientEventListener {
 
   @SubscribeEvent
   public void onKeyPress(TickEvent.ClientTickEvent evt) {
@@ -33,8 +33,8 @@ public class EventHandlerClient {
     if (evt.phase != TickEvent.Phase.END) {
       return;
     }
-    final boolean isKeyDown = KeyRegistry.openShulkerBox.isKeyDown();
-    final boolean isGameFocused = Minecraft.getInstance().isGameFocused();
+    final boolean isKeyDown = KeyRegistry.openShulkerBox.isDown();
+    final boolean isGameFocused = Minecraft.getInstance().isWindowActive();
 
     if (isKeyDown && isGameFocused) {
       NetworkHandler.INSTANCE.sendToServer(new CPacketOpenShulkerBox());
