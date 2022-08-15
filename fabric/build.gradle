@@ -33,11 +33,11 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "dev.emi:trinkets:${trinkets_version}"
-	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-item:${cca_version}"
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}"
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}"
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-item:${cca_version}"
 
-	include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-item:${cca_version}"
+	include "dev.onyxstudios.cardinal-components-api:cardinal-components-item:${cca_version}"
 }
 
 processResources {
