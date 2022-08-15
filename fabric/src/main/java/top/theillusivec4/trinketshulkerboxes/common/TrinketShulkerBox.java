@@ -28,7 +28,12 @@ public class TrinketShulkerBox implements Trinket {
 
   @Override
   public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-    TrinketShulkerBoxesMod.TRINKET_SHULKER_BOX_COMPONENT.maybeGet(stack).ifPresent(
-        TrinketShulkerBoxComponent::tick);
+    try {
+      TrinketShulkerBoxesMod.TRINKET_SHULKER_BOX_COMPONENT.maybeGet(stack).ifPresent(
+          TrinketShulkerBoxComponent::tick);
+    } catch (IllegalStateException e) {
+      TrinketShulkerBoxesMod.LOGGER.error("Cannot obtain component for shulker box!");
+      e.printStackTrace();
+    }
   }
 }

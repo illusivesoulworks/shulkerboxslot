@@ -72,44 +72,53 @@ public class TrinketShulkerBoxFeatureRenderer<T extends LivingEntity, M extends 
 
           for (int i = 0; i < inv.size(); i++) {
             ItemStack stack = inv.getStack(i);
-            TrinketShulkerBoxesMod.TRINKET_SHULKER_BOX_COMPONENT.maybeGet(stack)
-                .ifPresent(trinket -> {
-                  Direction direction = Direction.SOUTH;
-                  DyeColor color = ShulkerBoxBlock.getColor(stack.getItem());
-                  SpriteIdentifier spriteIdentifier;
+            try {
+              TrinketShulkerBoxesMod.TRINKET_SHULKER_BOX_COMPONENT.maybeGet(stack)
+                  .ifPresent(trinket -> {
+                    Direction direction = Direction.SOUTH;
+                    DyeColor color = ShulkerBoxBlock.getColor(stack.getItem());
+                    SpriteIdentifier spriteIdentifier;
 
-                  if (color == null) {
-                    spriteIdentifier = TexturedRenderLayers.SHULKER_TEXTURE_ID;
-                  } else {
-                    spriteIdentifier =
-                        TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.get(color.getId());
-                  }
+                    if (color == null) {
+                      spriteIdentifier = TexturedRenderLayers.SHULKER_TEXTURE_ID;
+                    } else {
+                      spriteIdentifier =
+                          TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.get(color.getId());
+                    }
 
-                  if (entity.isInSneakingPose() && !this.getContextModel().riding && !entity.isSwimming()) {
-                    matrices.translate(0.0F, 0.2F, 0.0F);
+                    if (entity.isInSneakingPose() && !this.getContextModel().riding &&
+                        !entity.isSwimming()) {
+                      matrices.translate(0.0F, 0.2F, 0.0F);
 
-                    if (this.getContextModel() instanceof BipedEntityModel bipedEntityModel)
-                    matrices.multiply(
-                        Vec3f.POSITIVE_X.getDegreesQuaternion(bipedEntityModel.body.pitch * TrinketRenderer.MAGIC_ROTATION));
-                  }
-                  matrices.push();
-                  matrices.translate(0.5D, 0.5D, 0.5D);
-                  float f = 0.45F;
-                  matrices.scale(f, f, f);
-                  matrices.multiply(direction.getRotationQuaternion());
-                  matrices.scale(1.0F, -1.0F, -1.0F);
-                  matrices.translate(-1.1125D, -0.675D, -0.5D);
-                  ModelPart modelPart = this.model.getLid();
-                  modelPart
-                      .setPivot(0.0F, 24.0F - trinket.getAnimationProgress(tickDelta) * 0.5F * 16.0F, 0.0F);
-                  modelPart.yaw = 270.0F * trinket.getAnimationProgress(tickDelta) * 0.017453292F;
-                  VertexConsumer vertexConsumer = spriteIdentifier
-                      .getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutoutNoCull);
-                  this.model
-                      .render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F,
-                          1.0F, 1.0F, 1.0F);
-                  matrices.pop();
-                });
+                      if (this.getContextModel() instanceof BipedEntityModel bipedEntityModel) {
+                        matrices.multiply(
+                            Vec3f.POSITIVE_X.getDegreesQuaternion(
+                                bipedEntityModel.body.pitch * TrinketRenderer.MAGIC_ROTATION));
+                      }
+                    }
+                    matrices.push();
+                    matrices.translate(0.5D, 0.5D, 0.5D);
+                    float f = 0.45F;
+                    matrices.scale(f, f, f);
+                    matrices.multiply(direction.getRotationQuaternion());
+                    matrices.scale(1.0F, -1.0F, -1.0F);
+                    matrices.translate(-1.1125D, -0.675D, -0.5D);
+                    ModelPart modelPart = this.model.getLid();
+                    modelPart
+                        .setPivot(0.0F,
+                            24.0F - trinket.getAnimationProgress(tickDelta) * 0.5F * 16.0F, 0.0F);
+                    modelPart.yaw = 270.0F * trinket.getAnimationProgress(tickDelta) * 0.017453292F;
+                    VertexConsumer vertexConsumer = spriteIdentifier
+                        .getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutoutNoCull);
+                    this.model
+                        .render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F,
+                            1.0F, 1.0F, 1.0F);
+                    matrices.pop();
+                  });
+            } catch (IllegalStateException e) {
+              TrinketShulkerBoxesMod.LOGGER.error("Cannot obtain component for shulker box!");
+              e.printStackTrace();
+            }
           }
         }
       }
