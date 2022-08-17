@@ -12,8 +12,8 @@ assignees: TheIllusiveC4
 Please reproduce all issues without any other unnecessary mods before submitting.
 -->
 #### Versions (Be specific, do not write "latest"):
-* Curious Shulker Boxes:
-* Curios:
+* Shulker Box Slot:
+* Curios/Trinkets:
 * Forge/Fabric:
 #### Observed Behavior:
 #### Expected Behavior:
@@ -23,4 +23,4 @@ Please reproduce all issues without any other unnecessary mods before submitting
 3.
 ...
 
-Crash Log: Please use a paste site like [hastebin](https://hastebin.com/).
+Crash Log: Please use a paste site like [pastebin](https://pastebin.com/).

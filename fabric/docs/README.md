@@ -1,5 +1,0 @@
-# Trinket Shulker Boxes [![](http://cf.way2muchnoise.eu/versions/trinket-shulker-boxes-fabric.svg)](https://www.curseforge.com/minecraft/mc-mods/trinket-shulker-boxes-fabric) [![](http://cf.way2muchnoise.eu/short_trinket-shulker-boxes-fabric_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/trinket-shulker-boxes-fabric/files) [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg?&style=flat-square)](https://www.gnu.org/licenses/lgpl-3.0) [![](https://img.shields.io/discord/500852157503766538.svg?color=green&label=Discord&style=flat-square)](https://discord.gg/JWgrdwt)
-
-## Overview
-
-Trinket Shulker Boxes is a mod that uses the Trinkets API to add a new slot, the Back slot, to the player inventory and allows the shulker boxes to be placed into this slot. While a shulker box is in this slot, the player can use a keybinding, default 'B', to directly access its contents. This allows the player to interact with a shulker box's contents more freely and easily without the need to place it down, to sacrifice an inventory slot to keep it around, or to need to search through a player's inventory for the box.

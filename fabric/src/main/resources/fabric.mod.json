@@ -1,38 +1,40 @@
 {
   "schemaVersion": 1,
-  "id": "trinketshulkerboxes",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "Trinket Shulker Boxes",
-  "description": "Adds trinket support for Shulker Boxes for easier access and management.",
-  "authors": ["C4"],
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_author}"
+  ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/trinket-shulker-boxes-fabric",
-    "sources": "https://github.com/TheIllusiveC4/TrinketShulkerBoxes",
-    "issues": "https://github.com/TheIllusiveC4/TrinketShulkerBoxes/issues"
+    "issues": "${issue_tracker}"
   },
-  "license": "LGPLv3.0",
-  "icon": "assets/trinketshulkerboxes/trinketshulkerboxes_icon.png",
+  "license": "${license}",
+  "icon": "${mod_id}_icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "top.theillusivec4.trinketshulkerboxes.common.TrinketShulkerBoxesMod"
+      "com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotFabricMod"
     ],
     "client": [
-      "top.theillusivec4.trinketshulkerboxes.client.TrinketShulkerBoxesClientMod"
+      "com.illusivesoulworks.shulkerboxslot.client.ShulkerBoxSlotFabricClientMod"
     ],
     "cardinal-components-item": [
-      "top.theillusivec4.trinketshulkerboxes.common.TrinketShulkerBoxesMod"
+      "com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotFabricMod"
     ]
   },
   "custom": {
     "cardinal-components": [
-      "trinketshulkerboxes:shulker_box"
+      "shulkerboxslot:shulker_box"
     ]
   },
   "mixins": [],
   "depends": {
-    "fabricloader": ">=0.11.3",
-    "minecraft": "1.18.x",
-    "trinkets": "*"
+    "fabricloader": ">=0.14",
+    "fabric": "*",
+    "trinkets": "*",
+    "minecraft": "${fabric_mc_version_range}",
+    "java": ">=17"
   }
 }
