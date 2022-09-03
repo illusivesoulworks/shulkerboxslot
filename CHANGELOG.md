@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 Prior to version 5.0.0, this project used MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [5.0.0-beta.2+1.19.2] - 2022.09.03
+### Fixed
+- [Forge] Fixed dedicated server crash
+
 ## [5.0.0-beta.1+1.19.2] - 2022.08.17
 ### Changed
 - Changed the name of the project from "Curious Shulker Boxes" and "Trinket Shulker Boxes" to "Shulker Box Slot"

@@ -25,9 +25,9 @@ import com.illusivesoulworks.shulkerboxslot.common.ShulkerBoxSlotForgeNetwork;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
-import net.minecraft.world.inventory.ShulkerBoxSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -35,6 +35,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -56,7 +57,6 @@ public class ShulkerBoxSlotForgeMod {
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::enqueue);
-    eventBus.addListener(this::registerKeys);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
@@ -70,11 +70,6 @@ public class ShulkerBoxSlotForgeMod {
     for (Item shulkerBox : ShulkerBoxSlotCommonMod.getShulkerBoxes()) {
       CuriosRendererRegistry.register(shulkerBox, CurioShulkerBoxRenderer::new);
     }
-  }
-
-  private void registerKeys(final RegisterKeyMappingsEvent evt) {
-    ShulkerBoxSlotKeyRegistry.setup();
-    evt.register(ShulkerBoxSlotKeyRegistry.openShulkerBox);
   }
 
   private void enqueue(final InterModEnqueueEvent evt) {
@@ -99,6 +94,16 @@ public class ShulkerBoxSlotForgeMod {
           return CuriosCapability.ITEM.orEmpty(cap, curio);
         }
       });
+    }
+  }
+
+  @Mod.EventBusSubscriber(modid = ShulkerBoxSlotConstants.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+  public static class ClientModEvents {
+
+    @SubscribeEvent
+    public static void registerKeys(final RegisterKeyMappingsEvent evt) {
+      ShulkerBoxSlotKeyRegistry.setup();
+      evt.register(ShulkerBoxSlotKeyRegistry.openShulkerBox);
     }
   }
 }
