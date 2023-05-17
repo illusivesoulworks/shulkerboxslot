@@ -21,7 +21,6 @@ import com.illusivesoulworks.shulkerboxslot.common.network.SPacketSyncAnimation;
 import com.illusivesoulworks.shulkerboxslot.platform.Services;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -96,7 +95,7 @@ public class ShulkerBoxAccessoryInventory implements Container, MenuProvider {
             new SPacketSyncAnimation(player.getId(), this.identifier, this.index, false),
             serverPlayer);
       }
-      player.level.playSound(null, new BlockPos(player.position()), SoundEvents.SHULKER_BOX_OPEN,
+      player.level.playSound(null, player.blockPosition(), SoundEvents.SHULKER_BOX_OPEN,
           SoundSource.BLOCKS, 0.5F, player.level.random.nextFloat() * 0.1F + 0.9F);
     }
   }
@@ -120,7 +119,7 @@ public class ShulkerBoxAccessoryInventory implements Container, MenuProvider {
             new SPacketSyncAnimation(player.getId(), this.identifier, this.index, true),
             serverPlayer);
       }
-      player.level.playSound(null, new BlockPos(player.position()), SoundEvents.SHULKER_BOX_CLOSE,
+      player.level.playSound(null, player.blockPosition(), SoundEvents.SHULKER_BOX_CLOSE,
           SoundSource.BLOCKS, 0.5F, player.level.random.nextFloat() * 0.1F + 0.9F);
     }
   }

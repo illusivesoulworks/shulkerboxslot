@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "com.illusivesoulworks.${mod_id}",
+    "id": "${mod_id}",
+    "version": "${version}",
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": [
+        "com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotQuiltMod"
+      ],
+      "client_init": [
+        "com.illusivesoulworks.shulkerboxslot.client.ShulkerBoxSlotQuiltClientMod"
+      ],
+      "cardinal-components-item": [
+        "com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotQuiltMod"
+      ]
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "version": "*"
+      },
+      {
+        "id": "quilt_base",
+        "version": "*"
+      },
+      {
+        "id": "minecraft",
+        "version": "${quilt_mc_version_range}"
+      },
+      {
+        "id": "java",
+        "version": ">=17"
+      },
+      {
+        "id": "quilted_fabric_api",
+        "version": "*"
+      },
+      {
+        "id": "trinkets",
+        "version": "*"
+      }
+    ],
+    "metadata": {
+      "name": "${mod_name}",
+      "description": "${mod_description}",
+      "contributors": {
+        "${mod_author}": "Owner"
+      },
+      "license": "${license}",
+      "icon": "${mod_id}_icon.png"
+    }
+  },
+  "cardinal-components": [
+    "shulkerboxslot:shulker_box"
+  ],
+  "mixin": [],
+  "minecraft": {
+    "environment": "*"
+  }
+}
