@@ -1,4 +1,6 @@
 {
   "key.shulkerboxslot.category": "Shulker Box Slot",
-  "key.shulkerboxslot.open.desc": "Open Shulker Box"
+  "key.shulkerboxslot.open.desc": "Open Shulker Box",
+  "gui.shulkerboxslot.config.renderShulkerBox.name": "Render equipped shulker box",
+  "gui.shulkerboxslot.config.renderShulkerBox.description": "If enabled, renders the equipped shulker box on players."
 }

@@ -18,6 +18,7 @@
 package com.illusivesoulworks.shulkerboxslot.client;
 
 import com.illusivesoulworks.shulkerboxslot.BaseShulkerBoxAccessory;
+import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -42,6 +43,10 @@ public class ShulkerBoxRenderer {
   public static void render(PoseStack poseStack, MultiBufferSource renderTypeBuffer, int light,
                             float partialTicks, LivingEntity livingEntity,
                             BaseShulkerBoxAccessory shulkerBoxAccessory, ItemStack stack) {
+
+    if (!ShulkerBoxSlotConfig.SERVER.renderShulkerBox.get()) {
+      return;
+    }
     Direction direction = Direction.SOUTH;
     DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
     Material material;

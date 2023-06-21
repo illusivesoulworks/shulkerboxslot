@@ -22,6 +22,9 @@
     ],
     "cardinal-components-item": [
       "com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotFabricMod"
+    ],
+    "spectrelib": [
+      "com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotConfigInitializer"
     ]
   },
   "custom": {

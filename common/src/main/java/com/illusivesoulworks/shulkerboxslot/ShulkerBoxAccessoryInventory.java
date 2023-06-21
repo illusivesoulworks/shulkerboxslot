@@ -21,10 +21,12 @@ import com.illusivesoulworks.shulkerboxslot.common.network.SPacketSyncAnimation;
 import com.illusivesoulworks.shulkerboxslot.platform.Services;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -37,10 +39,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ShulkerBoxMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -67,11 +70,6 @@ public class ShulkerBoxAccessoryInventory implements Container, MenuProvider {
   }
 
   @Override
-  public int getMaxStackSize() {
-    return 64;
-  }
-
-  @Override
   public void startOpen(@Nonnull Player player) {
 
     if (!player.isSpectator()) {
@@ -95,8 +93,8 @@ public class ShulkerBoxAccessoryInventory implements Container, MenuProvider {
             new SPacketSyncAnimation(player.getId(), this.identifier, this.index, false),
             serverPlayer);
       }
-      player.level.playSound(null, player.blockPosition(), SoundEvents.SHULKER_BOX_OPEN,
-          SoundSource.BLOCKS, 0.5F, player.level.random.nextFloat() * 0.1F + 0.9F);
+      player.level().playSound(null, player.blockPosition(), SoundEvents.SHULKER_BOX_OPEN,
+          SoundSource.BLOCKS, 0.5F, player.level().random.nextFloat() * 0.1F + 0.9F);
     }
   }
 
@@ -119,8 +117,8 @@ public class ShulkerBoxAccessoryInventory implements Container, MenuProvider {
             new SPacketSyncAnimation(player.getId(), this.identifier, this.index, true),
             serverPlayer);
       }
-      player.level.playSound(null, player.blockPosition(), SoundEvents.SHULKER_BOX_CLOSE,
-          SoundSource.BLOCKS, 0.5F, player.level.random.nextFloat() * 0.1F + 0.9F);
+      player.level().playSound(null, player.blockPosition(), SoundEvents.SHULKER_BOX_CLOSE,
+          SoundSource.BLOCKS, 0.5F, player.level().random.nextFloat() * 0.1F + 0.9F);
     }
   }
 
@@ -201,17 +199,22 @@ public class ShulkerBoxAccessoryInventory implements Container, MenuProvider {
     return shulkerBox.getHoverName();
   }
 
-  public void fillWithLoot(ResourceLocation lootTable, long lootTableSeed, Player player) {
+  public void fillWithLoot(ResourceLocation lootTable, long lootTableSeed, @Nonnull Player player) {
+    Level level = player.level();
+    MinecraftServer server = level.getServer();
 
-    if (player.level.getServer() != null) {
-      LootTable loottable = player.level.getServer().getLootTables().get(lootTable);
-      LootContext.Builder lootcontext$builder =
-          (new LootContext.Builder((ServerLevel) player.level)).withParameter(
-                  LootContextParams.ORIGIN, Vec3.atCenterOf(player.blockPosition()))
-              .withOptionalRandomSeed(lootTableSeed);
-      lootcontext$builder.withLuck(player.getLuck())
+    if (lootTable != null && server != null && level instanceof ServerLevel serverLevel) {
+      LootTable loottable = server.getLootData().getLootTable(lootTable);
+
+      if (player instanceof ServerPlayer serverPlayer) {
+        CriteriaTriggers.GENERATE_LOOT.trigger(serverPlayer, lootTable);
+      }
+      LootParams.Builder lootparams$builder =
+          (new LootParams.Builder(serverLevel).withParameter(LootContextParams.ORIGIN,
+              Vec3.atCenterOf(player.blockPosition())));
+      lootparams$builder.withLuck(player.getLuck())
           .withParameter(LootContextParams.THIS_ENTITY, player);
-      loottable.fill(this, lootcontext$builder.create(LootContextParamSets.CHEST));
+      loottable.fill(this, lootparams$builder.create(LootContextParamSets.CHEST), lootTableSeed);
     }
   }
 
