@@ -1,3 +1,6 @@
 {
-  "key.shulkerboxslot.open.desc": "Открыть шалкеровый ящик"
+  "key.shulkerboxslot.category": "Слот для шалкерового ящика",
+  "key.shulkerboxslot.open.desc": "Открыть шалкеровый ящик",
+  "gui.shulkerboxslot.config.renderShulkerBox.name": "Отображать экипированный шалкеровый ящик",
+  "gui.shulkerboxslot.config.renderShulkerBox.description": "Если включено, отображает экипированный шалкеровый ящик на игроках."
 }
