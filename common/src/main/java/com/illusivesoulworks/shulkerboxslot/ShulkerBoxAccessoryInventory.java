@@ -57,11 +57,16 @@ public class ShulkerBoxAccessoryInventory implements Container, MenuProvider {
   private final String identifier;
   private final int index;
 
-  public ShulkerBoxAccessoryInventory(ItemStack shulkerBox, String identifier, int index) {
+  public ShulkerBoxAccessoryInventory(ItemStack shulkerBox, String identifier, int index,
+                                      int size) {
     this.shulkerBox = shulkerBox;
     this.identifier = identifier;
     this.index = index;
-    this.items = NonNullList.withSize(27, ItemStack.EMPTY);
+    this.items = NonNullList.withSize(size, ItemStack.EMPTY);
+  }
+
+  public ShulkerBoxAccessoryInventory(ItemStack shulkerBox, String identifier, int index) {
+    this(shulkerBox, identifier, index, 27);
   }
 
   @Override

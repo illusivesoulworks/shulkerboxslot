@@ -18,10 +18,12 @@
 package com.illusivesoulworks.shulkerboxslot.client;
 
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotFabricMod;
+import com.illusivesoulworks.shulkerboxslot.common.integration.reinfshulker.ReinfShulkerPlugin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.client.TrinketRenderer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -44,7 +46,7 @@ public class TrinketShulkerBoxRenderer implements TrinketRenderer {
           poseStack.mulPose(Axis.XP.rotation(bipedEntityModel.body.xRot));
         }
       }
-      ShulkerBoxRenderer.render(poseStack, multiBufferSource, i, v2, livingEntity,
+      ShulkerBoxRenderer.render(poseStack, multiBufferSource, i, v2,
           component.getShulkerBoxAccessory(), stack);
     });
   }

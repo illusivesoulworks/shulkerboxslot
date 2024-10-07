@@ -64,6 +64,29 @@ subprojects {
             name = 'Ladysnake Mods'
             url = 'https://maven.ladysnake.org/releases'
         }
+
+        maven {
+            name = "Reinforced Storage"
+            url = 'https://raw.githubusercontent.com/Aton-Kish/mcmod/maven'
+        }
+
+        maven {
+            name = "Reinforced Storage Dependencies"
+            url = 'https://maven.shedaniel.me/'
+        }
+    }
+
+    repositories {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url "https://cursemaven.com"
+                }
+            }
+            filter {
+                includeGroup "curse.maven"
+            }
+        }
     }
 
     tasks.withType(JavaCompile).configureEach {

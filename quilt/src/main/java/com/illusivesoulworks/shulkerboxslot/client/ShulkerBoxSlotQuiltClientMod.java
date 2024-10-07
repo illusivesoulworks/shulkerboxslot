@@ -18,7 +18,9 @@
 package com.illusivesoulworks.shulkerboxslot.client;
 
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotCommonMod;
+import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotQuiltMod;
 import com.illusivesoulworks.shulkerboxslot.common.ShulkerBoxSlotPackets;
+import com.illusivesoulworks.shulkerboxslot.common.integration.reinfshulker.ReinfShulkerClientPlugin;
 import com.illusivesoulworks.shulkerboxslot.common.network.SPacketSyncAnimation;
 import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -44,6 +46,10 @@ public class ShulkerBoxSlotQuiltClientMod implements ClientModInitializer {
 
     for (Item shulkerBox : ShulkerBoxSlotCommonMod.getShulkerBoxes()) {
       TrinketRendererRegistry.registerRenderer(shulkerBox, new TrinketShulkerBoxRenderer());
+    }
+
+    if (ShulkerBoxSlotQuiltMod.isReinfShulkerLoaded) {
+      ReinfShulkerClientPlugin.onInitialize();
     }
   }
 }

@@ -20,6 +20,7 @@ package com.illusivesoulworks.shulkerboxslot;
 import com.illusivesoulworks.shulkerboxslot.common.ShulkerBoxSlotPackets;
 import com.illusivesoulworks.shulkerboxslot.common.TrinketShulkerBox;
 import com.illusivesoulworks.shulkerboxslot.common.TrinketShulkerBoxComponent;
+import com.illusivesoulworks.shulkerboxslot.common.integration.reinfshulker.ReinfShulkerPlugin;
 import com.illusivesoulworks.shulkerboxslot.common.network.CPacketOpenShulkerBox;
 import dev.emi.trinkets.api.TrinketsApi;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
@@ -28,14 +29,18 @@ import dev.onyxstudios.cca.api.v3.item.ItemComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.item.ItemComponentInitializer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 public class ShulkerBoxSlotQuiltMod implements ModInitializer, ItemComponentInitializer {
+
+  public static boolean isReinfShulkerLoaded = false;
 
   private static final ComponentKey<TrinketShulkerBoxComponent> TRINKET_SHULKER_BOX_COMPONENT =
       ComponentRegistry.getOrCreate(
@@ -54,13 +59,25 @@ public class ShulkerBoxSlotQuiltMod implements ModInitializer, ItemComponentInit
 
   @Override
   public void onInitialize(ModContainer modContainer) {
+    isReinfShulkerLoaded = QuiltLoader.isModLoaded("reinfshulker");
 
     for (Item shulkerBox : ShulkerBoxSlotCommonMod.getShulkerBoxes()) {
       TrinketsApi.registerTrinket(shulkerBox, new TrinketShulkerBox());
     }
     ServerPlayNetworking.registerGlobalReceiver(ShulkerBoxSlotPackets.OPEN_SHULKER_BOX,
         (server, player, handler, buf, responseSender) -> server.execute(
-            () -> CPacketOpenShulkerBox.handle(null, player)));
+            () -> {
+
+              if (isReinfShulkerLoaded) {
+                ReinfShulkerPlugin.handleOpenPacket(player);
+              } else {
+                CPacketOpenShulkerBox.handle(null, player);
+              }
+            }));
+
+    if (isReinfShulkerLoaded) {
+      ReinfShulkerPlugin.onInitialize();
+    }
   }
 
   @Override
@@ -68,6 +85,10 @@ public class ShulkerBoxSlotQuiltMod implements ModInitializer, ItemComponentInit
 
     for (Item shulkerBox : ShulkerBoxSlotCommonMod.getShulkerBoxes()) {
       registry.register(shulkerBox, TRINKET_SHULKER_BOX_COMPONENT, TrinketShulkerBoxComponent::new);
+    }
+
+    if (isReinfShulkerLoaded) {
+      ReinfShulkerPlugin.registerItemComponents(registry, TRINKET_SHULKER_BOX_COMPONENT);
     }
   }
 }

@@ -48,7 +48,7 @@ public class CurioShulkerBoxRenderer implements ICurioRenderer {
         LivingEntity livingEntity = slotContext.entity();
         ICurioRenderer.translateIfSneaking(matrixStack, livingEntity);
         ICurioRenderer.rotateIfSneaking(matrixStack, livingEntity);
-        ShulkerBoxRenderer.render(matrixStack, renderTypeBuffer, light, partialTicks, livingEntity,
+        ShulkerBoxRenderer.render(matrixStack, renderTypeBuffer, light, partialTicks,
             shulkerBoxAccessory, stack);
       }
     });

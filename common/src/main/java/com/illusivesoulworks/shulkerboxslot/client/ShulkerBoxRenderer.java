@@ -31,7 +31,6 @@ import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
@@ -41,21 +40,13 @@ public class ShulkerBoxRenderer {
   private static ShulkerModel<?> model;
 
   public static void render(PoseStack poseStack, MultiBufferSource renderTypeBuffer, int light,
-                            float partialTicks, LivingEntity livingEntity,
+                            float partialTicks, Material material,
                             BaseShulkerBoxAccessory shulkerBoxAccessory, ItemStack stack) {
 
     if (!ShulkerBoxSlotConfig.SERVER.renderShulkerBox.get()) {
       return;
     }
     Direction direction = Direction.SOUTH;
-    DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
-    Material material;
-
-    if (color == null) {
-      material = Sheets.DEFAULT_SHULKER_TEXTURE_LOCATION;
-    } else {
-      material = Sheets.SHULKER_TEXTURE_LOCATION.get(color.getId());
-    }
     poseStack.pushPose();
     poseStack.translate(0.5D, 0.5D, 0.5D);
     float f = 0.45F;
@@ -78,5 +69,19 @@ public class ShulkerBoxRenderer {
     model.renderToBuffer(poseStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F,
         1.0F, 1.0F);
     poseStack.popPose();
+  }
+
+  public static void render(PoseStack poseStack, MultiBufferSource renderTypeBuffer, int light,
+                            float partialTicks, BaseShulkerBoxAccessory shulkerBoxAccessory,
+                            ItemStack stack) {
+    DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
+    Material material;
+
+    if (color == null) {
+      material = Sheets.DEFAULT_SHULKER_TEXTURE_LOCATION;
+    } else {
+      material = Sheets.SHULKER_TEXTURE_LOCATION.get(color.getId());
+    }
+    render(poseStack, renderTypeBuffer, light, partialTicks, material, shulkerBoxAccessory, stack);
   }
 }

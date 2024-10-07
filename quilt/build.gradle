@@ -43,6 +43,11 @@ dependencies {
     modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}"
     modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-item:${cca_version}"
 
+    modCompileOnly "curse.maven:reinforced-shulker-boxes-529874:4713841"
+    modCompileOnly "atonkish.reinfcore:reinforced-core:3.1.2+1.20"
+//    modRuntimeOnly "curse.maven:reinforced-shulker-boxes-529874:4713841"
+//    modRuntimeOnly "atonkish.reinfcore:reinforced-core:3.1.2+1.20"
+
     modRuntimeOnly("com.terraformersmc:modmenu:${mod_menu_version}") {
         transitive = false
     }

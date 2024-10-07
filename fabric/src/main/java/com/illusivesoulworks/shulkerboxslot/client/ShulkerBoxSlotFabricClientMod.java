@@ -18,10 +18,10 @@
 package com.illusivesoulworks.shulkerboxslot.client;
 
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotCommonMod;
+import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotFabricMod;
 import com.illusivesoulworks.shulkerboxslot.common.ShulkerBoxSlotPackets;
+import com.illusivesoulworks.shulkerboxslot.common.integration.reinfshulker.ReinfShulkerClientPlugin;
 import com.illusivesoulworks.shulkerboxslot.common.network.SPacketSyncAnimation;
-import dev.emi.trinkets.TrinketsClient;
-import dev.emi.trinkets.api.TrinketsApi;
 import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -45,6 +45,10 @@ public class ShulkerBoxSlotFabricClientMod implements ClientModInitializer {
 
     for (Item shulkerBox : ShulkerBoxSlotCommonMod.getShulkerBoxes()) {
       TrinketRendererRegistry.registerRenderer(shulkerBox, new TrinketShulkerBoxRenderer());
+    }
+
+    if (ShulkerBoxSlotFabricMod.isReinfShulkerLoaded) {
+      ReinfShulkerClientPlugin.onInitialize();
     }
   }
 }
