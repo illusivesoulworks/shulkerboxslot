@@ -30,4 +30,9 @@ public class TrinketShulkerBox implements Trinket {
     ShulkerBoxSlotQuiltMod.getShulkerBoxComponent(stack)
         .ifPresent(component -> component.getShulkerBoxAccessory().tick());
   }
+
+  @Override
+  public boolean canEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+    return stack.getCount() == 1;
+  }
 }
