@@ -2,7 +2,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 This is a copy of the changelog for the most recent version. For the full version history, go [here](https://github.com/illusivesoulworks/shulkerboxslot/blob/1.20.x/CHANGELOG.md).
 
-## [5.1.1+1.20.1] - 2023.10.23
+## [5.2.0+1.20.1] - 2024.10.07
+### Added
+- [Fabric/Quilt] Added Reinforced Shulker Boxes support [#11](https://github.com/illusivesoulworks/shulkerboxslot/issues/11)
+- Added `renderWithElytraAndCapes` configuration option [#34](https://github.com/illusivesoulworks/shulkerboxslot/issues/34)
 ### Changed
-- Updated to SpectreLib 0.13.14
-- [Fabric] Requires Fabric Loader >=0.14.23
+- [Fabric/Quilt] Stacked Shulker Boxes can no longer be equipped to prevent duplication glitch [#36](https://github.com/illusivesoulworks/shulkerboxslot/issues/36)
+- [Forge] Disabled equip from use if Shulker Box function from Quick Right Click mod is enabled [#32](https://github.com/illusivesoulworks/shulkerboxslot/issues/32)
