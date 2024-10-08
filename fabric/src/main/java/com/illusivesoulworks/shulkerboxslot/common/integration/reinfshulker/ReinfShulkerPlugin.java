@@ -7,6 +7,7 @@ import atonkish.reinfshulker.stat.ModStats;
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxAccessoryInventory;
 import com.illusivesoulworks.shulkerboxslot.common.TrinketShulkerBox;
 import com.illusivesoulworks.shulkerboxslot.common.TrinketShulkerBoxComponent;
+import com.illusivesoulworks.shulkerboxslot.common.network.CPacketOpenShulkerBox;
 import com.illusivesoulworks.shulkerboxslot.platform.Services;
 import dev.emi.trinkets.api.TrinketsApi;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
@@ -76,6 +77,8 @@ public class ReinfShulkerPlugin {
         MenuProvider container =
             new ReinfShulkerBoxAccessoryInventory(stack, identifier, index, size);
         Services.INSTANCE.openScreen(container, player);
+      } else {
+        CPacketOpenShulkerBox.handle(null, player);
       }
     });
   }

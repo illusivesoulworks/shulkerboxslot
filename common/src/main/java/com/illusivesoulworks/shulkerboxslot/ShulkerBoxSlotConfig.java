@@ -19,12 +19,19 @@ public class ShulkerBoxSlotConfig {
   }
 
   public static class Server {
+
     public final SpectreConfigSpec.BooleanValue renderShulkerBox;
+    public final SpectreConfigSpec.BooleanValue renderWithElytraAndCapes;
 
     public Server(SpectreConfigSpec.Builder builder) {
       renderShulkerBox = builder.comment("If enabled, renders the equipped shulker box on players.")
           .translation(CONFIG_PREFIX + "renderShulkerBox")
           .define("renderShulkerBox", true);
+
+      renderWithElytraAndCapes = builder.comment(
+              "If enabled and renderShulkerBox is true, renders the equipped shulker box on players if they are wearing an elytra or cape.")
+          .translation(CONFIG_PREFIX + "renderWithElytraAndCapes")
+          .define("renderWithElytraAndCapes", true);
     }
   }
 

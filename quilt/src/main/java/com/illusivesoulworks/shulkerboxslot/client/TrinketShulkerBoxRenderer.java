@@ -44,7 +44,7 @@ public class TrinketShulkerBoxRenderer implements TrinketRenderer {
           poseStack.mulPose(Axis.XP.rotation(bipedEntityModel.body.xRot));
         }
       }
-      ShulkerBoxRenderer.render(poseStack, multiBufferSource, i, v2,
+      ShulkerBoxRenderer.render(poseStack, multiBufferSource, i, v2, livingEntity,
           component.getShulkerBoxAccessory(), stack);
     });
   }

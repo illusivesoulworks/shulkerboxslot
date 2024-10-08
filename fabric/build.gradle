@@ -24,6 +24,7 @@ dependencies {
 
     modCompileOnly "curse.maven:reinforced-shulker-boxes-529874:4713841"
     modCompileOnly "atonkish.reinfcore:reinforced-core:3.1.2+1.20"
+    modCompileOnly "curse.maven:elytra-slot-317716:5778732"
 //    modRuntimeOnly "curse.maven:reinforced-shulker-boxes-529874:4713841"
 //    modRuntimeOnly "atonkish.reinfcore:reinforced-core:3.1.2+1.20"
 

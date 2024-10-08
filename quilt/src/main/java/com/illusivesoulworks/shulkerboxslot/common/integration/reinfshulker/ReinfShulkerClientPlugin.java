@@ -68,7 +68,7 @@ public class ReinfShulkerClientPlugin {
                   .get(color.getId());
         }
         ShulkerBoxRenderer.render(poseStack, multiBufferSource, i, v2, spriteIdentifier2,
-            component.getShulkerBoxAccessory(), stack);
+            livingEntity, component.getShulkerBoxAccessory(), stack);
       });
     }
   }

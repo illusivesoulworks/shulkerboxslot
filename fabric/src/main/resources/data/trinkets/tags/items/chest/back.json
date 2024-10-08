@@ -90,10 +90,25 @@
       "id": "netherite_plus:netherite_black_shulker_box",
       "required": false
     },
-    "#reinfshulker:copper_shulker_boxes",
-    "#reinfshulker:iron_shulker_boxes",
-    "#reinfshulker:gold_shulker_boxes",
-    "#reinfshulker:diamond_shulker_boxes",
-    "#reinfshulker:netherite_shulker_boxes"
+    {
+      "id": "#reinfshulker:copper_shulker_boxes",
+      "required": false
+    },
+    {
+      "id": "#reinfshulker:iron_shulker_boxes",
+      "required": false
+    },
+    {
+      "id": "#reinfshulker:gold_shulker_boxes",
+      "required": false
+    },
+    {
+      "id": "#reinfshulker:diamond_shulker_boxes",
+      "required": false
+    },
+    {
+      "id": "#reinfshulker:netherite_shulker_boxes",
+      "required": false
+    }
   ]
 }

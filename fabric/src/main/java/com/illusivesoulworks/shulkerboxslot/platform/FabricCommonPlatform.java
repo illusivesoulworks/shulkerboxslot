@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
@@ -112,5 +113,16 @@ public class FabricCommonPlatform implements ICommonPlatform {
     ServerPlayNetworking.send(player, ShulkerBoxSlotPackets.SYNC_SHULKER_BOX, buf);
     PlayerLookup.tracking(player).forEach(
         player1 -> ServerPlayNetworking.send(player1, ShulkerBoxSlotPackets.SYNC_SHULKER_BOX, buf));
+  }
+
+  private static Boolean isElytraSlotLoaded = null;
+
+  @Override
+  public boolean isElytraSlotLoaded() {
+
+    if (isElytraSlotLoaded == null) {
+      isElytraSlotLoaded = FabricLoader.getInstance().isModLoaded("elytraslot");
+    }
+    return isElytraSlotLoaded;
   }
 }

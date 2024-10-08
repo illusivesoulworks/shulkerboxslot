@@ -40,6 +40,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
+import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.PlayerLookup;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
@@ -112,5 +113,16 @@ public class QuiltCommonPlatform implements ICommonPlatform {
     ServerPlayNetworking.send(player, ShulkerBoxSlotPackets.SYNC_SHULKER_BOX, buf);
     PlayerLookup.tracking(player).forEach(
         player1 -> ServerPlayNetworking.send(player1, ShulkerBoxSlotPackets.SYNC_SHULKER_BOX, buf));
+  }
+
+  private static Boolean isElytraSlotLoaded = null;
+
+  @Override
+  public boolean isElytraSlotLoaded() {
+
+    if (isElytraSlotLoaded == null) {
+      isElytraSlotLoaded = QuiltLoader.isModLoaded("elytraslot");
+    }
+    return isElytraSlotLoaded;
   }
 }

@@ -28,6 +28,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -83,5 +84,16 @@ public class ForgeCommonPlatform implements ICommonPlatform {
   public void sendSyncPacket(SPacketSyncAnimation packet, ServerPlayer player) {
     ShulkerBoxSlotForgeNetwork.get()
         .send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), packet);
+  }
+
+  private static Boolean isElytraSlotLoaded = null;
+
+  @Override
+  public boolean isElytraSlotLoaded() {
+
+    if (isElytraSlotLoaded == null) {
+      isElytraSlotLoaded = ModList.get().isLoaded("elytraslot");
+    }
+    return isElytraSlotLoaded;
   }
 }

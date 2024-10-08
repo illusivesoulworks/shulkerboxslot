@@ -19,20 +19,28 @@ package com.illusivesoulworks.shulkerboxslot.client;
 
 import com.illusivesoulworks.shulkerboxslot.BaseShulkerBoxAccessory;
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotConfig;
+import com.illusivesoulworks.shulkerboxslot.common.integration.ElytraSlotPlugin;
+import com.illusivesoulworks.shulkerboxslot.platform.Services;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ShulkerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 
 public class ShulkerBoxRenderer {
@@ -40,11 +48,30 @@ public class ShulkerBoxRenderer {
   private static ShulkerModel<?> model;
 
   public static void render(PoseStack poseStack, MultiBufferSource renderTypeBuffer, int light,
-                            float partialTicks, Material material,
+                            float partialTicks, Material material, LivingEntity livingEntity,
                             BaseShulkerBoxAccessory shulkerBoxAccessory, ItemStack stack) {
 
     if (!ShulkerBoxSlotConfig.SERVER.renderShulkerBox.get()) {
       return;
+    }
+
+    if (!ShulkerBoxSlotConfig.SERVER.renderWithElytraAndCapes.get()) {
+
+      if (livingEntity instanceof AbstractClientPlayer clientPlayer &&
+          clientPlayer.isCapeLoaded() && clientPlayer.getCloakTextureLocation() != null &&
+          clientPlayer.isModelPartShown(PlayerModelPart.CAPE)) {
+        return;
+      }
+      ItemStack chest = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
+
+      if (chest.is(Items.ELYTRA) || chest.getItem() instanceof ElytraItem) {
+        return;
+      }
+
+      if (Services.INSTANCE.isElytraSlotLoaded() &&
+          ElytraSlotPlugin.isElytraEquipped(livingEntity)) {
+        return;
+      }
     }
     Direction direction = Direction.SOUTH;
     poseStack.pushPose();
@@ -72,8 +99,8 @@ public class ShulkerBoxRenderer {
   }
 
   public static void render(PoseStack poseStack, MultiBufferSource renderTypeBuffer, int light,
-                            float partialTicks, BaseShulkerBoxAccessory shulkerBoxAccessory,
-                            ItemStack stack) {
+                            float partialTicks, LivingEntity livingEntity,
+                            BaseShulkerBoxAccessory shulkerBoxAccessory, ItemStack stack) {
     DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
     Material material;
 
@@ -82,6 +109,7 @@ public class ShulkerBoxRenderer {
     } else {
       material = Sheets.SHULKER_TEXTURE_LOCATION.get(color.getId());
     }
-    render(poseStack, renderTypeBuffer, light, partialTicks, material, shulkerBoxAccessory, stack);
+    render(poseStack, renderTypeBuffer, light, partialTicks, material, livingEntity,
+        shulkerBoxAccessory, stack);
   }
 }

@@ -81,6 +81,8 @@ dependencies {
 	implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
 
     compileOnly fg.deobf("curse.maven:quickrightclick-880596:5572012")
+    compileOnly fg.deobf("curse.maven:elytra-slot-317716:5778734")
+    testCompileOnly fg.deobf("curse.maven:elytra-slot-317716:5778734")
 
 	implementation fg.deobf(group: 'com.illusivesoulworks.spectrelib', name: 'spectrelib-forge', version: "${spectrelib_range}")
     jarJar fg.deobf(group: 'com.illusivesoulworks.spectrelib', name: 'spectrelib-forge', version: "${spectrelib_range}") {

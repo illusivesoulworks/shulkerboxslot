@@ -38,4 +38,6 @@ public interface ICommonPlatform {
   void openScreen(MenuProvider container, ServerPlayer player);
 
   void sendSyncPacket(SPacketSyncAnimation packet, ServerPlayer player);
+
+  boolean isElytraSlotLoaded();
 }
