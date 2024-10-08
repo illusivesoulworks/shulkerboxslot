@@ -74,18 +74,10 @@ subprojects {
             name = "Reinforced Storage Dependencies"
             url = 'https://maven.shedaniel.me/'
         }
-    }
 
-    repositories {
-        exclusiveContent {
-            forRepository {
-                maven {
-                    url "https://cursemaven.com"
-                }
-            }
-            filter {
-                includeGroup "curse.maven"
-            }
+        maven {
+            name = "CurseMaven"
+            url = 'https://cursemaven.com'
         }
     }
 

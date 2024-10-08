@@ -36,6 +36,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -47,6 +48,8 @@ import top.theillusivec4.curios.api.type.capability.ICurio;
 @Mod(ShulkerBoxSlotConstants.MOD_ID)
 public class ShulkerBoxSlotForgeMod {
 
+  public static boolean isQuickRightClickLoaded = false;
+
   public ShulkerBoxSlotForgeMod() {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::setup);
@@ -55,6 +58,7 @@ public class ShulkerBoxSlotForgeMod {
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
+    isQuickRightClickLoaded = ModList.get().isLoaded("quickrightclick");
     MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, this::attachCapabilities);
     ShulkerBoxSlotForgeNetwork.setup();
   }

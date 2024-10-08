@@ -18,6 +18,8 @@
 package com.illusivesoulworks.shulkerboxslot.common;
 
 import com.illusivesoulworks.shulkerboxslot.BaseShulkerBoxAccessory;
+import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotForgeMod;
+import com.illusivesoulworks.shulkerboxslot.common.integration.QuickRightClickPlugin;
 import javax.annotation.Nonnull;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
@@ -49,7 +51,8 @@ public class CurioShulkerBox extends BaseShulkerBoxAccessory implements ICurio {
 
   @Override
   public boolean canEquipFromUse(SlotContext slotContext) {
-    return true;
+    return !ShulkerBoxSlotForgeMod.isQuickRightClickLoaded ||
+        !QuickRightClickPlugin.checkQuickRightClick();
   }
 
   @Override
