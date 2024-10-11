@@ -17,27 +17,23 @@
 
 package com.illusivesoulworks.shulkerboxslot.platform.services;
 
-import com.illusivesoulworks.shulkerboxslot.BaseShulkerBoxAccessory;
-import com.illusivesoulworks.shulkerboxslot.common.network.SPacketSyncAnimation;
-import java.util.Optional;
+import com.illusivesoulworks.shulkerboxslot.AnimProgressComponent;
+import com.illusivesoulworks.shulkerboxslot.common.network.SPayloadSyncAnimation;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Triple;
 
 public interface ICommonPlatform {
 
-  Optional<Triple<ItemStack, String, Integer>> findShulkerBoxAccessory(LivingEntity livingEntity);
+  DataComponentType<AnimProgressComponent> getAnimationComponent();
 
-  Optional<BaseShulkerBoxAccessory> getShulkerBoxAccessory(ItemStack stack);
+  Triple<ItemStack, String, Integer> findShulkerBoxAccessory(LivingEntity livingEntity);
 
-  Optional<BaseShulkerBoxAccessory> getShulkerBoxAccessory(LivingEntity livingEntity, String id,
-                                                           int index);
+  ItemStack getShulkerBoxAccessory(LivingEntity livingEntity, String id, int index);
 
-  void openScreen(MenuProvider container, ServerPlayer player);
-
-  void sendSyncPacket(SPacketSyncAnimation packet, ServerPlayer player);
+  void sendSyncPacket(SPayloadSyncAnimation packet, ServerPlayer player);
 
   boolean isElytraSlotLoaded();
 }

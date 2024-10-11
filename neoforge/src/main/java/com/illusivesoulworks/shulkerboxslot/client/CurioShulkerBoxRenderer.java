@@ -17,7 +17,6 @@
 
 package com.illusivesoulworks.shulkerboxslot.client;
 
-import com.illusivesoulworks.shulkerboxslot.BaseShulkerBoxAccessory;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -43,14 +42,12 @@ public class CurioShulkerBoxRenderer implements ICurioRenderer {
                                                                         float ageInTicks,
                                                                         float netHeadYaw,
                                                                         float headPitch) {
-    CuriosApi.getCuriosHelper().getCurio(stack).ifPresent(curio -> {
-      if (curio instanceof BaseShulkerBoxAccessory shulkerBoxAccessory) {
-        LivingEntity livingEntity = slotContext.entity();
-        ICurioRenderer.translateIfSneaking(matrixStack, livingEntity);
-        ICurioRenderer.rotateIfSneaking(matrixStack, livingEntity);
-        ShulkerBoxRenderer.render(matrixStack, renderTypeBuffer, light, partialTicks, livingEntity,
-            shulkerBoxAccessory, stack);
-      }
+    CuriosApi.getCurio(stack).ifPresent(curio -> {
+      LivingEntity livingEntity = slotContext.entity();
+      ICurioRenderer.translateIfSneaking(matrixStack, livingEntity);
+      ICurioRenderer.rotateIfSneaking(matrixStack, livingEntity);
+      ShulkerBoxRenderer.render(matrixStack, renderTypeBuffer, light, partialTicks, livingEntity,
+          stack);
     });
   }
 }

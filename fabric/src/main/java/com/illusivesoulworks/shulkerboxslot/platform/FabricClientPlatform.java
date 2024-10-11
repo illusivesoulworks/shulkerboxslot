@@ -17,10 +17,9 @@
 
 package com.illusivesoulworks.shulkerboxslot.platform;
 
-import com.illusivesoulworks.shulkerboxslot.common.ShulkerBoxSlotPackets;
+import com.illusivesoulworks.shulkerboxslot.common.network.CPayloadOpenShulkerBox;
 import com.illusivesoulworks.shulkerboxslot.platform.services.IClientPlatform;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.KeyMapping;
 
 public class FabricClientPlatform implements IClientPlatform {
@@ -32,6 +31,6 @@ public class FabricClientPlatform implements IClientPlatform {
 
   @Override
   public void sendOpenPacket() {
-    ClientPlayNetworking.send(ShulkerBoxSlotPackets.OPEN_SHULKER_BOX, PacketByteBufs.create());
+    ClientPlayNetworking.send(CPayloadOpenShulkerBox.INSTANCE);
   }
 }

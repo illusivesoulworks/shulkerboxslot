@@ -17,7 +17,6 @@
 
 package com.illusivesoulworks.shulkerboxslot.client;
 
-import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotFabricMod;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.emi.trinkets.api.SlotReference;
@@ -35,17 +34,14 @@ public class TrinketShulkerBoxRenderer implements TrinketRenderer {
                      EntityModel<? extends LivingEntity> entityModel, PoseStack poseStack,
                      MultiBufferSource multiBufferSource, int i, LivingEntity livingEntity, float v,
                      float v1, float v2, float v3, float v4, float v5) {
-    ShulkerBoxSlotFabricMod.getShulkerBoxComponent(stack).ifPresent(component -> {
 
-      if (livingEntity.isCrouching() && !entityModel.riding && !livingEntity.isSwimming()) {
-        poseStack.translate(0.0F, 0.2F, 0.0F);
+    if (livingEntity.isCrouching() && !entityModel.riding && !livingEntity.isSwimming()) {
+      poseStack.translate(0.0F, 0.2F, 0.0F);
 
-        if (entityModel instanceof HumanoidModel bipedEntityModel) {
-          poseStack.mulPose(Axis.XP.rotation(bipedEntityModel.body.xRot));
-        }
+      if (entityModel instanceof HumanoidModel bipedEntityModel) {
+        poseStack.mulPose(Axis.XP.rotation(bipedEntityModel.body.xRot));
       }
-      ShulkerBoxRenderer.render(poseStack, multiBufferSource, i, v2, livingEntity,
-          component.getShulkerBoxAccessory(), stack);
-    });
+    }
+    ShulkerBoxRenderer.render(poseStack, multiBufferSource, i, v2, livingEntity, stack);
   }
 }

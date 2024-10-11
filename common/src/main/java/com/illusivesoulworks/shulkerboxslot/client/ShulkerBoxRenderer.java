@@ -17,7 +17,7 @@
 
 package com.illusivesoulworks.shulkerboxslot.client;
 
-import com.illusivesoulworks.shulkerboxslot.BaseShulkerBoxAccessory;
+import com.illusivesoulworks.shulkerboxslot.AnimProgressComponent;
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotConfig;
 import com.illusivesoulworks.shulkerboxslot.common.integration.ElytraSlotPlugin;
 import com.illusivesoulworks.shulkerboxslot.platform.Services;
@@ -49,7 +49,7 @@ public class ShulkerBoxRenderer {
 
   public static void render(PoseStack poseStack, MultiBufferSource renderTypeBuffer, int light,
                             float partialTicks, Material material, LivingEntity livingEntity,
-                            BaseShulkerBoxAccessory shulkerBoxAccessory, ItemStack stack) {
+                            ItemStack stack) {
 
     if (!ShulkerBoxSlotConfig.SERVER.renderShulkerBox.get()) {
       return;
@@ -58,7 +58,7 @@ public class ShulkerBoxRenderer {
     if (!ShulkerBoxSlotConfig.SERVER.renderWithElytraAndCapes.get()) {
 
       if (livingEntity instanceof AbstractClientPlayer clientPlayer &&
-          clientPlayer.isCapeLoaded() && clientPlayer.getCloakTextureLocation() != null &&
+          clientPlayer.getSkin().capeTexture() != null &&
           clientPlayer.isModelPartShown(PlayerModelPart.CAPE)) {
         return;
       }
@@ -89,18 +89,17 @@ public class ShulkerBoxRenderer {
           Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.SHULKER));
     }
     ModelPart modelpart = model.getLid();
-    modelpart.setPos(0.0F, 24.0F - shulkerBoxAccessory.getProgress(partialTicks) * 0.5F * 16.0F,
-        0.0F);
-    modelpart.yRot =
-        270.0F * shulkerBoxAccessory.getProgress(partialTicks) * ((float) Math.PI / 180F);
-    model.renderToBuffer(poseStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F,
-        1.0F, 1.0F);
+    float progress =
+        stack.getOrDefault(Services.INSTANCE.getAnimationComponent(), new AnimProgressComponent())
+            .getProgress(partialTicks);
+    modelpart.setPos(0.0F, 24.0F - progress * 0.5F * 16.0F, 0.0F);
+    modelpart.yRot = 270.0F * progress * ((float) Math.PI / 180F);
+    model.renderToBuffer(poseStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY);
     poseStack.popPose();
   }
 
   public static void render(PoseStack poseStack, MultiBufferSource renderTypeBuffer, int light,
-                            float partialTicks, LivingEntity livingEntity,
-                            BaseShulkerBoxAccessory shulkerBoxAccessory, ItemStack stack) {
+                            float partialTicks, LivingEntity livingEntity, ItemStack stack) {
     DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
     Material material;
 
@@ -109,7 +108,6 @@ public class ShulkerBoxRenderer {
     } else {
       material = Sheets.SHULKER_TEXTURE_LOCATION.get(color.getId());
     }
-    render(poseStack, renderTypeBuffer, light, partialTicks, material, livingEntity,
-        shulkerBoxAccessory, stack);
+    render(poseStack, renderTypeBuffer, light, partialTicks, material, livingEntity, stack);
   }
 }

@@ -19,14 +19,16 @@ package com.illusivesoulworks.shulkerboxslot.client;
 
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotCommonMod;
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotFabricMod;
-import com.illusivesoulworks.shulkerboxslot.common.ShulkerBoxSlotPackets;
 import com.illusivesoulworks.shulkerboxslot.common.integration.reinfshulker.ReinfShulkerClientPlugin;
-import com.illusivesoulworks.shulkerboxslot.common.network.SPacketSyncAnimation;
+import com.illusivesoulworks.shulkerboxslot.common.network.SPayloadSyncAnimation;
+import com.illusivesoulworks.shulkerboxslot.common.network.ShulkerBoxClientPackets;
 import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.item.Item;
 
 public class ShulkerBoxSlotFabricClientMod implements ClientModInitializer {
@@ -37,11 +39,18 @@ public class ShulkerBoxSlotFabricClientMod implements ClientModInitializer {
     KeyBindingHelper.registerKeyBinding(ShulkerBoxSlotKeyRegistry.openShulkerBox);
     ClientTickEvents.END_CLIENT_TICK.register(
         (minecraftClient -> ShulkerBoxSlotClientEvents.clientTick()));
-    ClientPlayNetworking.registerGlobalReceiver(ShulkerBoxSlotPackets.SYNC_SHULKER_BOX,
-        (client, handler, buf, responseSender) -> {
-          SPacketSyncAnimation msg = SPacketSyncAnimation.decode(buf);
-          client.execute(() -> SPacketSyncAnimation.handle(msg));
-        });
+    ClientPlayNetworking.registerGlobalReceiver(SPayloadSyncAnimation.TYPE, (payload, context) -> {
+      Minecraft mc = Minecraft.getInstance();
+      ClientLevel level = mc.level;
+
+      if (level != null) {
+        boolean isClosing = payload.isClosing();
+        String identifier = payload.identifier();
+        int entityId = payload.entityId();
+        int index = payload.index();
+        mc.execute(() -> ShulkerBoxClientPackets.handle(entityId, identifier, index, isClosing));
+      }
+    });
 
     for (Item shulkerBox : ShulkerBoxSlotCommonMod.getShulkerBoxes()) {
       TrinketRendererRegistry.registerRenderer(shulkerBox, new TrinketShulkerBoxRenderer());

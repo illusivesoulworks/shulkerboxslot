@@ -6,13 +6,9 @@ import atonkish.reinfshulker.block.ReinforcedShulkerBoxBlock;
 import atonkish.reinfshulker.stat.ModStats;
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxAccessoryInventory;
 import com.illusivesoulworks.shulkerboxslot.common.TrinketShulkerBox;
-import com.illusivesoulworks.shulkerboxslot.common.TrinketShulkerBoxComponent;
-import com.illusivesoulworks.shulkerboxslot.common.network.CPacketOpenShulkerBox;
+import com.illusivesoulworks.shulkerboxslot.common.network.CPayloadOpenShulkerBox;
 import com.illusivesoulworks.shulkerboxslot.platform.Services;
 import dev.emi.trinkets.api.TrinketsApi;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.item.ItemComponentFactoryRegistry;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,21 +48,14 @@ public class ReinfShulkerPlugin {
     });
   }
 
-  public static void registerItemComponents(ItemComponentFactoryRegistry registry,
-                                            ComponentKey<TrinketShulkerBoxComponent> key) {
-
-    for (Item item : REINF_SHULKERS) {
-      registry.register(item, key, TrinketShulkerBoxComponent::new);
-    }
-  }
-
   public static void handleOpenPacket(ServerPlayer player) {
-    Optional<Triple<ItemStack, String, Integer>> accessory =
+    Triple<ItemStack, String, Integer> accessory =
         Services.INSTANCE.findShulkerBoxAccessory(player);
-    accessory.ifPresent(box -> {
-      ItemStack stack = box.getLeft();
-      String identifier = box.getMiddle();
-      int index = box.getRight();
+    ItemStack stack = accessory.getLeft();
+
+    if (!stack.isEmpty()) {
+      String identifier = accessory.getMiddle();
+      int index = accessory.getRight();
       int size;
 
       if (stack.getItem() instanceof BlockItem blockItem &&
@@ -76,11 +65,11 @@ public class ReinfShulkerPlugin {
         player.awardStat(ModStats.OPEN_REINFORCED_SHULKER_BOX_MAP.get(material));
         MenuProvider container =
             new ReinfShulkerBoxAccessoryInventory(stack, identifier, index, size);
-        Services.INSTANCE.openScreen(container, player);
+        player.openMenu(container);
       } else {
-        CPacketOpenShulkerBox.handle(null, player);
+        CPayloadOpenShulkerBox.handle(player);
       }
-    });
+    }
   }
 
   public static class ReinfShulkerBoxAccessoryInventory extends ShulkerBoxAccessoryInventory {

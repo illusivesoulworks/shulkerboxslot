@@ -18,10 +18,9 @@
 package com.illusivesoulworks.shulkerboxslot.common;
 
 import com.illusivesoulworks.shulkerboxslot.BaseShulkerBoxAccessory;
-import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotForgeMod;
+import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotNeoForgeMod;
 import com.illusivesoulworks.shulkerboxslot.common.integration.QuickRightClickPlugin;
 import javax.annotation.Nonnull;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.curios.api.SlotContext;
@@ -29,8 +28,10 @@ import top.theillusivec4.curios.api.type.capability.ICurio;
 
 public class CurioShulkerBox extends BaseShulkerBoxAccessory implements ICurio {
 
+  private final ItemStack stack;
+
   public CurioShulkerBox(ItemStack stack) {
-    super(stack);
+    this.stack = stack;
   }
 
   @Override
@@ -40,7 +41,7 @@ public class CurioShulkerBox extends BaseShulkerBoxAccessory implements ICurio {
 
   @Override
   public void curioTick(SlotContext slotContext) {
-    this.tick();
+    this.tick(this.stack);
   }
 
   @Nonnull
@@ -51,23 +52,7 @@ public class CurioShulkerBox extends BaseShulkerBoxAccessory implements ICurio {
 
   @Override
   public boolean canEquipFromUse(SlotContext slotContext) {
-    return !ShulkerBoxSlotForgeMod.isQuickRightClickLoaded ||
+    return !ShulkerBoxSlotNeoForgeMod.isQuickRightClickLoaded ||
         !QuickRightClickPlugin.checkQuickRightClick();
-  }
-
-  @Override
-  public boolean canSync(SlotContext slotContext) {
-    return true;
-  }
-
-  @Nonnull
-  @Override
-  public CompoundTag writeSyncData(SlotContext slotContext) {
-    return this.write();
-  }
-
-  @Override
-  public void readSyncData(SlotContext slotContext, CompoundTag compound) {
-    this.read(compound);
   }
 }

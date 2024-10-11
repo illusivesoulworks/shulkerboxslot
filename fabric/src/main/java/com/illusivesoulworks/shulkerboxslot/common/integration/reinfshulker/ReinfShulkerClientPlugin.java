@@ -3,7 +3,6 @@ package com.illusivesoulworks.shulkerboxslot.common.integration.reinfshulker;
 import atonkish.reinfcore.util.ReinforcingMaterial;
 import atonkish.reinfshulker.block.ReinforcedShulkerBoxBlock;
 import atonkish.reinfshulker.client.render.ModTexturedRenderLayers;
-import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotFabricMod;
 import com.illusivesoulworks.shulkerboxslot.client.ShulkerBoxRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -35,41 +34,38 @@ public class ReinfShulkerClientPlugin {
     public void render(ItemStack stack, SlotReference slotReference,
                        EntityModel<? extends LivingEntity> entityModel, PoseStack poseStack,
                        MultiBufferSource multiBufferSource, int i, LivingEntity livingEntity,
-                       float v,
-                       float v1, float v2, float v3, float v4, float v5) {
-      ShulkerBoxSlotFabricMod.getShulkerBoxComponent(stack).ifPresent(component -> {
+                       float v, float v1, float v2, float v3, float v4, float v5) {
 
-        if (livingEntity.isCrouching() && !entityModel.riding && !livingEntity.isSwimming()) {
-          poseStack.translate(0.0F, 0.2F, 0.0F);
+      if (livingEntity.isCrouching() && !entityModel.riding && !livingEntity.isSwimming()) {
+        poseStack.translate(0.0F, 0.2F, 0.0F);
 
-          if (entityModel instanceof HumanoidModel bipedEntityModel) {
-            poseStack.mulPose(Axis.XP.rotation(bipedEntityModel.body.xRot));
-          }
+        if (entityModel instanceof HumanoidModel bipedEntityModel) {
+          poseStack.mulPose(Axis.XP.rotation(bipedEntityModel.body.xRot));
         }
-        DyeColor color = ReinforcedShulkerBoxBlock.getColorFromItem(stack.getItem());
-        ReinforcingMaterial material = null;
+      }
+      DyeColor color = ReinforcedShulkerBoxBlock.getColorFromItem(stack.getItem());
+      ReinforcingMaterial material = null;
 
-        if (stack.getItem() instanceof BlockItem blockItem &&
-            blockItem.getBlock() instanceof ReinforcedShulkerBoxBlock reinforcedShulkerBoxBlock) {
-          material = reinforcedShulkerBoxBlock.getMaterial();
-        }
+      if (stack.getItem() instanceof BlockItem blockItem &&
+          blockItem.getBlock() instanceof ReinforcedShulkerBoxBlock reinforcedShulkerBoxBlock) {
+        material = reinforcedShulkerBoxBlock.getMaterial();
+      }
 
-        if (material == null) {
-          return;
-        }
-        Material spriteIdentifier2;
+      if (material == null) {
+        return;
+      }
+      Material spriteIdentifier2;
 
-        if (color == null) {
-          spriteIdentifier2 =
-              ModTexturedRenderLayers.REINFORCED_SHULKER_TEXTURE_ID_MAP.get(material);
-        } else {
-          spriteIdentifier2 =
-              ModTexturedRenderLayers.COLORED_REINFORCED_SHULKER_BOXES_TEXTURES_MAP.get(material)
-                  .get(color.getId());
-        }
-        ShulkerBoxRenderer.render(poseStack, multiBufferSource, i, v2, spriteIdentifier2,
-            livingEntity, component.getShulkerBoxAccessory(), stack);
-      });
+      if (color == null) {
+        spriteIdentifier2 =
+            ModTexturedRenderLayers.REINFORCED_SHULKER_TEXTURE_ID_MAP.get(material);
+      } else {
+        spriteIdentifier2 =
+            ModTexturedRenderLayers.COLORED_REINFORCED_SHULKER_BOXES_TEXTURES_MAP.get(material)
+                .get(color.getId());
+      }
+      ShulkerBoxRenderer.render(poseStack, multiBufferSource, i, v2, spriteIdentifier2,
+          livingEntity, stack);
     }
   }
 }

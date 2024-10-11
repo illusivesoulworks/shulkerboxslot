@@ -17,48 +17,33 @@
 
 package com.illusivesoulworks.shulkerboxslot;
 
-import com.illusivesoulworks.shulkerboxslot.common.ShulkerBoxSlotPackets;
 import com.illusivesoulworks.shulkerboxslot.common.TrinketShulkerBox;
-import com.illusivesoulworks.shulkerboxslot.common.TrinketShulkerBoxComponent;
 import com.illusivesoulworks.shulkerboxslot.common.integration.reinfshulker.ReinfShulkerPlugin;
-import com.illusivesoulworks.shulkerboxslot.common.network.CPacketOpenShulkerBox;
-import com.illusivesoulworks.shulkerboxslot.platform.Services;
+import com.illusivesoulworks.shulkerboxslot.common.network.CPayloadOpenShulkerBox;
+import com.illusivesoulworks.shulkerboxslot.common.network.SPayloadSyncAnimation;
 import dev.emi.trinkets.api.TrinketsApi;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import dev.onyxstudios.cca.api.v3.item.ItemComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.item.ItemComponentInitializer;
-import java.util.Optional;
-import javax.annotation.Nonnull;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import org.apache.commons.lang3.tuple.Triple;
 
-public class ShulkerBoxSlotFabricMod implements ModInitializer, ItemComponentInitializer {
+public class ShulkerBoxSlotFabricMod implements ModInitializer {
+
+  public static final DataComponentType<AnimProgressComponent> ANIM_PROGRESS =
+      Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+          ResourceLocation.fromNamespaceAndPath(ShulkerBoxSlotConstants.MOD_ID,
+              "animation_progress"),
+          DataComponentType.<AnimProgressComponent>builder().persistent(AnimProgressComponent.CODEC)
+              .networkSynchronized(AnimProgressComponent.STREAM_CODEC).build()
+      );
 
   public static boolean isReinfShulkerLoaded = false;
-
-  private static final ComponentKey<TrinketShulkerBoxComponent> TRINKET_SHULKER_BOX_COMPONENT =
-      ComponentRegistry.getOrCreate(
-          new ResourceLocation(ShulkerBoxSlotConstants.MOD_ID, "shulker_box"),
-          TrinketShulkerBoxComponent.class);
-
-  public static Optional<TrinketShulkerBoxComponent> getShulkerBoxComponent(ItemStack stack) {
-    try {
-      return TRINKET_SHULKER_BOX_COMPONENT.maybeGet(stack);
-    } catch (IllegalStateException e) {
-      ShulkerBoxSlotConstants.LOG.error("Cannot obtain component for shulker box!");
-      e.printStackTrace();
-    }
-    return Optional.empty();
-  }
 
   @Override
   public void onInitialize() {
@@ -67,31 +52,24 @@ public class ShulkerBoxSlotFabricMod implements ModInitializer, ItemComponentIni
     for (Item shulkerBox : ShulkerBoxSlotCommonMod.getShulkerBoxes()) {
       TrinketsApi.registerTrinket(shulkerBox, new TrinketShulkerBox());
     }
-    ServerPlayNetworking.registerGlobalReceiver(ShulkerBoxSlotPackets.OPEN_SHULKER_BOX,
-        (server, player, handler, buf, responseSender) -> server.execute(
-            () -> {
+    PayloadTypeRegistry.playC2S()
+        .register(CPayloadOpenShulkerBox.TYPE, CPayloadOpenShulkerBox.STREAM_CODEC);
+    PayloadTypeRegistry.playS2C()
+        .register(SPayloadSyncAnimation.TYPE, SPayloadSyncAnimation.STREAM_CODEC);
+    ServerPlayNetworking.registerGlobalReceiver(CPayloadOpenShulkerBox.TYPE, (payload, context) -> {
+      ServerPlayer player = context.player();
+      context.server().execute(() -> {
 
-              if (isReinfShulkerLoaded) {
-                ReinfShulkerPlugin.handleOpenPacket(player);
-              } else {
-                CPacketOpenShulkerBox.handle(null, player);
-              }
-            }));
+        if (isReinfShulkerLoaded) {
+          ReinfShulkerPlugin.handleOpenPacket(player);
+        } else {
+          CPayloadOpenShulkerBox.handle(player);
+        }
+      });
+    });
 
     if (isReinfShulkerLoaded) {
       ReinfShulkerPlugin.onInitialize();
-    }
-  }
-
-  @Override
-  public void registerItemComponentFactories(@Nonnull ItemComponentFactoryRegistry registry) {
-
-    for (Item shulkerBox : ShulkerBoxSlotCommonMod.getShulkerBoxes()) {
-      registry.register(shulkerBox, TRINKET_SHULKER_BOX_COMPONENT, TrinketShulkerBoxComponent::new);
-    }
-
-    if (isReinfShulkerLoaded) {
-      ReinfShulkerPlugin.registerItemComponents(registry, TRINKET_SHULKER_BOX_COMPONENT);
     }
   }
 }

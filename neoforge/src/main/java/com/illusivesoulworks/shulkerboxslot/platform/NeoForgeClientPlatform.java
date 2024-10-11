@@ -18,16 +18,17 @@
 package com.illusivesoulworks.shulkerboxslot.platform;
 
 import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotCommonMod;
-import com.illusivesoulworks.shulkerboxslot.common.ShulkerBoxSlotForgeNetwork;
-import com.illusivesoulworks.shulkerboxslot.common.network.CPacketOpenShulkerBox;
+import com.illusivesoulworks.shulkerboxslot.common.network.CPayloadOpenShulkerBox;
 import com.illusivesoulworks.shulkerboxslot.platform.services.IClientPlatform;
+import javax.annotation.Nonnull;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraftforge.client.settings.IKeyConflictContext;
+import net.neoforged.neoforge.client.settings.IKeyConflictContext;
+import net.neoforged.neoforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.CuriosApi;
 
-public class ForgeClientPlatform implements IClientPlatform {
+public class NeoForgeClientPlatform implements IClientPlatform {
 
   @Override
   public KeyMapping createKeyMapping(int key, String desc, String category) {
@@ -37,14 +38,15 @@ public class ForgeClientPlatform implements IClientPlatform {
         LocalPlayer player = Minecraft.getInstance().player;
 
         if (player != null) {
-          return CuriosApi.getCuriosHelper().findFirstCurio(player,
-              (stack) -> ShulkerBoxSlotCommonMod.isShulkerBox(stack.getItem())).isPresent();
+          return CuriosApi.getCuriosInventory(player).map(inv -> inv.findFirstCurio(
+                  stack -> ShulkerBoxSlotCommonMod.isShulkerBox(stack.getItem())).isPresent())
+              .orElse(false);
         }
         return false;
       }
 
       @Override
-      public boolean conflicts(IKeyConflictContext other) {
+      public boolean conflicts(@Nonnull IKeyConflictContext other) {
         return false;
       }
     };
@@ -55,6 +57,6 @@ public class ForgeClientPlatform implements IClientPlatform {
 
   @Override
   public void sendOpenPacket() {
-    ShulkerBoxSlotForgeNetwork.get().sendToServer(new CPacketOpenShulkerBox());
+    PacketDistributor.sendToServer(CPayloadOpenShulkerBox.INSTANCE);
   }
 }

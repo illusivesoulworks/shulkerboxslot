@@ -17,18 +17,17 @@
 
 package com.illusivesoulworks.shulkerboxslot.common;
 
-import com.illusivesoulworks.shulkerboxslot.ShulkerBoxSlotFabricMod;
+import com.illusivesoulworks.shulkerboxslot.BaseShulkerBoxAccessory;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.Trinket;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-public class TrinketShulkerBox implements Trinket {
+public class TrinketShulkerBox extends BaseShulkerBoxAccessory implements Trinket {
 
   @Override
   public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-    ShulkerBoxSlotFabricMod.getShulkerBoxComponent(stack)
-        .ifPresent(component -> component.getShulkerBoxAccessory().tick());
+    this.tick(stack);
   }
 
   @Override

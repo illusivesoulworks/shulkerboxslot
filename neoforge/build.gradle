@@ -40,12 +40,20 @@ neoForge {
     }
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDirs += '../licenses'
+        }
+    }
+}
+
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     implementation "curse.maven:adorned-1036809:5740650"
 
-    compileOnly "curse.maven:quickrightclick-880596:5572012"
+    compileOnly "curse.maven:quickrightclick-880596:5609518"
     compileOnly "curse.maven:elytra-slot-317716:5778734"
 
 	implementation group: 'com.illusivesoulworks.spectrelib', name: 'spectrelib-neoforge', version: "${spectrelib_version}"
