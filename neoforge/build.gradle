@@ -72,7 +72,6 @@ task publishCurseForge(type: TaskPublishCurseForge) {
     }
     mainFile.addModLoader("NeoForge")
     mainFile.addRequirement("curios-continuation")
-    mainFile.addRequirement("caelus")
     mainFile.withAdditionalFile(sourcesJar)
 
     doLast {
@@ -95,7 +94,6 @@ modrinth {
     loaders = ["neoforge"]
     dependencies {
         required.project 'curios-continuation'
-        required.project 'caelus'
     }
 }
 
